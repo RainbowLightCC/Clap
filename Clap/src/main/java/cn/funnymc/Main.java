@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import cn.funnymc.server.*;
 import cn.funnymc.login.*;
 /**
- * SocketChat 程序入口
- * @author lcj
+ * 拍手游戏程序入口
+ * @author TheFunnyCrafter
  */
 public class Main {
 	public static void main(String[] args) throws UnknownHostException {
