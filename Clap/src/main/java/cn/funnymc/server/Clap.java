@@ -76,12 +76,11 @@ public class Clap extends WebSocketServer {
 				break;
 			case "CLAP":
 				/*
-				 * TODO: [19.7.27]Parse Action Json
+				 * TODO: [19.8.04] Send the command to Game.java
 				 */
 				break;
 			case "PLAY":
-				//TODO here
-				
+				GamesManager.join(player);
 				break;
 		}
 	}
