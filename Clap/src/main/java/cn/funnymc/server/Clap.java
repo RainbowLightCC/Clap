@@ -2,6 +2,8 @@ package cn.funnymc.server;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+
+import cn.funnymc.game.Player;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.exceptions.InvalidDataException;
@@ -24,7 +26,7 @@ public class Clap extends WebSocketServer {
 		super(address);
 	}
 
-	//�жϵ�½
+	//Check token
 	@Override
 	public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer( WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
 		ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer( conn, draft, request );
@@ -36,48 +38,50 @@ public class Clap extends WebSocketServer {
 		//���token
 		String name=Checker.checkToken(token);
 		if(name==null)throw new InvalidDataException(2);
-		conn.setAttachment(name);
+		conn.setAttachment(new Player(conn,name));
 		return builder;
 	}
 
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake){
-		System.out.println(conn.getAttachment()+" connected!");
+		Player player=(Player)conn.getAttachment();
+		System.out.println(player.getName()+" connected!");
 	}
 	@Override
 	public void onClose(WebSocket conn,int code,String reason,boolean remote) {
-		System.out.println(conn.getAttachment()+" has left!");
+		Player player=(Player)conn.getAttachment();
+		System.out.println(player.getName()+" has left!");
 	}
 
 	/**
 	 * Client -> Server
 	 * SAY <Text>
-	 * NEWROOM <Setup>(Json)
+	 * PLAY //<Setup>(Json)
 	 * CLAP <Action>(Json)
-	 * JOIN
 	 *
 	 * Server -> Client
 	 * CHAT <Username> <Message>
 	 * INFO <Type> <Message>
-	 *
+	 * - INFO WAIT <...>
 	 */
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
-		System.out.println( conn.getAttachment() + ": " + message );
+		Player player=(Player) conn;
+		System.out.println( player.getName() + ": " + message );
 		String[] splitedMessage=message.split(" ",2);
 		String cmd=splitedMessage[0],text=splitedMessage[1];
 		switch (cmd) {
 			case "SAY":
-				broadcast("CHAT "+conn.getAttachment()+" "+text);
+				broadcast("CHAT "+player.getName()+" "+text);
 				break;
 			case "CLAP":
 				/*
 				 * TODO: [19.7.27]Parse Action Json
 				 */
-
 				break;
-			case "NEWROOM":
-
+			case "PLAY":
+				//TODO here
+				
 				break;
 		}
 	}

@@ -4,17 +4,13 @@ import cn.funnymc.occupations.*;
 
 import java.util.HashMap;
 
-import org.java_websocket.WebSocket;
-
 import cn.funnymc.actions.*;
 
 /**
- * TODO: remove "gameId"
+ * TODO: think about how to use "gameId"
  */
 public class Game {
-	public Player player1=null;
-	public Player player2=null;
-    public WebSocket conn1=null,conn2=null;
+	public Player player1, player2;
     public boolean isGameRunning=false,isGameCompleted=false,isDoingInput=false;
     public boolean isBounce1=false,isBounce2=false;
     public int attack1Length=0,attack2Length=0;
@@ -44,19 +40,16 @@ public class Game {
 	public Game(){
 		//TODO
 	}
-	public void newPlayer(String name) {
+	public void newPlayer(Player player) {
 		if(player1==null) {
-			player1=new Player(6,name);
+			player1.setClapper(new UnemployedMan(6,player.getName()));
 		}
 		else if(player2==null) {
-			player2=new Player(6,name);
-		}
-		if(player1!=null&&player2!=null) {
-//			start();
+			player2.setClapper(new UnemployedMan(6,player.getName()));
 		}
 	}
 	private void broadcast(String msg) {
-		conn1.send(msg);
+		player1.sendMessage(msg);
 	}
 	/**
      * 五六七走
@@ -77,13 +70,13 @@ public class Game {
      */
     private void buildHashMaps() {
     	attackMap1=new HashMap<String, Attack>();
-    	for(Attack atk:player1.getAttackList()) attackMap1.put(atk.name,atk);
+    	for(Attack atk:player1.getClapper().getAttackList()) attackMap1.put(atk.name,atk);
     	attackMap2=new HashMap<String, Attack>();
-    	for(Attack atk:player2.getAttackList()) attackMap2.put(atk.name,atk);
+    	for(Attack atk:player2.getClapper().getAttackList()) attackMap2.put(atk.name,atk);
     	defendMap1=new HashMap<String, Defend>();
-    	for(Defend dfd:player1.getDefendList()) defendMap1.put(dfd.name,dfd);
+    	for(Defend dfd:player1.getClapper().getDefendList()) defendMap1.put(dfd.name,dfd);
     	defendMap2=new HashMap<String, Defend>();
-    	for(Defend dfd:player2.getDefendList()) defendMap2.put(dfd.name,dfd);
+    	for(Defend dfd:player2.getClapper().getDefendList()) defendMap2.put(dfd.name,dfd);
     }
     public void start() {
     	Thread gameThread=new Thread(){
@@ -92,29 +85,29 @@ public class Game {
 	    			isGameRunning=true;
 	    			isGameCompleted=false;
 	    			buildHashMaps();
-					conn1.send("gameinfo start");
-					conn2.send("gameinfo start");
+					player1.sendMessage("gameinfo start");
+					player2.sendMessage("gameinfo start");
 					//游戏本体
-					player1.init();
-					player2.init();
+					player1.getClapper().init();
+					player2.getClapper().init();
 					while(true) {//回合
 						//结束游戏 吗
 						if(!isGameRunning) {
 							break;
 						}
 						//报血量
-						broadcast("info * "+player1.getName()+" 血量："+player1.getHealth());
-						broadcast("info * "+player2.getName()+" 血量："+player2.getHealth());
-						if(player1.checkAfterRound()&&player2.checkAfterRound()) {
+						broadcast("info * "+player1.getName()+" 血量："+player1.getClapper().getHealth());
+						broadcast("info * "+player2.getName()+" 血量："+player2.getClapper().getHealth());
+						if(player1.getClapper().checkAfterRound()&&player2.getClapper().checkAfterRound()) {
 							broadcast("info ** 两个人都去世——平局了！");
 							break;
 						}
-						else if(player1.checkAfterRound()) {
+						else if(player1.getClapper().checkAfterRound()) {
 							broadcast("info ** "+player1.getName()+" 去世了！");
 							broadcast("info ** 大赢家："+player2.getName());
 							break;
 						}
-						else if(player2.checkAfterRound()) {
+						else if(player2.getClapper().checkAfterRound()) {
 							broadcast("info ** "+player2.getName()+" 去世了！");
 							broadcast("info ** 大赢家："+player1.getName());
 							break;
@@ -128,16 +121,16 @@ public class Game {
 							defend1=null;defend2=null;
 							isBounce1=false;isBounce2=false;
 							//广播饼数
-							broadcast("info * "+player1.getName()+" 有 "+player1.getBiscuits()+" 个饼");
-							broadcast("info * "+player2.getName()+" 有 "+player2.getBiscuits()+" 个饼");
+							broadcast("info * "+player1.getName()+" 有 "+player1.getClapper().getBiscuits()+" 个饼");
+							broadcast("info * "+player2.getName()+" 有 "+player2.getClapper().getBiscuits()+" 个饼");
 							//输入
 							broadcast("info ** 开始玩家输入 **");
-							conn1.send("gameinfo startinput");
-							conn2.send("gameinfo startinput");
+							player1.sendMessage("gameinfo startinput");
+							player2.sendMessage("gameinfo startinput");
 							isDoingInput=true;
 							Thread.sleep(3000);
-							conn1.send("gameinfo endinput");
-							conn2.send("gameinfo endinput");
+							player1.sendMessage("gameinfo endinput");
+							player2.sendMessage("gameinfo endinput");
 							isDoingInput=false;
 							broadcast("info ** 玩家输入完成 **");
 							//自动出饼
@@ -145,7 +138,7 @@ public class Game {
 							if((!isBounce2)&&defend2==null&&attack2Length==0)defend2=defendMap2.get("饼");
 							//广播输入结果
 							if(isBounce1) {
-								new Bounce(player1).onExecuted();
+								new Bounce(player1.getClapper()).onExecuted();
 								broadcast("info * "+player1.getName()+" 出了弹");
 							}
 							else if(defend1!=null)broadcast("info * "+player1.getName()+" 输入了防御："+defend1.name);
@@ -156,7 +149,7 @@ public class Game {
 								}
 							}
 							if(isBounce2) {
-								new Bounce(player2).onExecuted();
+								new Bounce(player2.getClapper()).onExecuted();
 								broadcast("info * "+player2.getName()+" 出了弹");
 							}
 							else if(defend2!=null)broadcast("info * "+player2.getName()+" 输入了防御："+defend2.name);
@@ -167,13 +160,13 @@ public class Game {
 								}
 							}
 							//判断爆点
-							if((defend1!=null&&player1.checkAfterInput(defend1))||
-									(defend1==null&&player1.checkAfterInput(attack1,attack1Length))) {
+							if((defend1!=null&&player1.getClapper().checkAfterInput(defend1))||
+									(defend1==null&&player1.getClapper().checkAfterInput(attack1,attack1Length))) {
 								broadcast("info * "+player1.getName()+" 爆点");
 								endRound=true;
 							}
-							if((defend2!=null&&player2.checkAfterInput(defend2))||
-									(defend2==null&&player2.checkAfterInput(attack2,attack2Length))) {
+							if((defend2!=null&&player2.getClapper().checkAfterInput(defend2))||
+									(defend2==null&&player2.getClapper().checkAfterInput(attack2,attack2Length))) {
 								broadcast("info * "+player2.getName()+" 爆点");
 								endRound=true;
 							}
@@ -203,21 +196,21 @@ public class Game {
 							}
 							else if(defend1==null&&defend2!=null) {
 								//1攻击 2防御
-								endRound=player2.onDefend(defend2,attack1,attack1Length);
+								endRound=player2.getClapper().onDefend(defend2,attack1,attack1Length);
 							}else if(defend2==null&&defend1!=null) {
 								//2攻击 1防御
-								endRound=player1.onDefend(defend1,attack2,attack2Length);
+								endRound=player1.getClapper().onDefend(defend1,attack2,attack2Length);
 							}else if(defend1==null&&defend2==null) {
 								//都攻击
-								endRound=player1.onCounteract(attack1,attack2,attack1Length,attack2Length);
-								endRound=player2.onCounteract(attack2,attack1,attack2Length,attack1Length)||endRound;
+								endRound=player1.getClapper().onCounteract(attack1,attack2,attack1Length,attack2Length);
+								endRound=player2.getClapper().onCounteract(attack2,attack1,attack2Length,attack1Length)||endRound;
 							}
 							//切回合
 							if(endRound)break;
 						}
 					}
-					conn1.send("gameinfo end");
-					conn2.send("gameinfo end");
+					player1.sendMessage("gameinfo end");
+					player2.sendMessage("gameinfo end");
 					isGameCompleted=true;
 				} catch (Exception e) {
 					System.out.println("进入catch");
@@ -244,10 +237,10 @@ public class Game {
 						broadcast("info *** 拍手游戏出bug了！");
 					}
 				} finally {
-					conn2.send("gameinfo end");
-					conn1.send("gameinfo end");
-					conn1=null;
-					conn2=null;
+					player2.sendMessage("gameinfo end");
+					player1.sendMessage("gameinfo end");
+					player1=null;
+					player2=null;
 					player1=null;
 					player2=null;
 					isGameRunning=false;

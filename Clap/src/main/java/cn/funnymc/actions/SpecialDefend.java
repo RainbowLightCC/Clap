@@ -5,8 +5,8 @@ import cn.funnymc.occupations.*;
 public class SpecialDefend {
 	//TODO: getter,setter,private,javadocs...
 	public String name;
-	public Player me;
-	public SpecialDefend(String name, Player me) {
+	public UnemployedMan me;
+	public SpecialDefend(String name, UnemployedMan me) {
 		this.name=name;
 		this.me=me;
 	}
@@ -22,7 +22,7 @@ public class SpecialDefend {
 	 * @param othersLength -别人的攻击列表长度
 	 * @return 是否切回合
 	 */
-	public boolean onAttacked(Attack[] othersAttack, int othersLength, Player otherPlayer) {
+	public boolean onAttacked(Attack[] othersAttack, int othersLength, UnemployedMan otherPlayer) {
 		return false;
 	}
 }

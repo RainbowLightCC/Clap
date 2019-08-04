@@ -4,7 +4,7 @@ import cn.funnymc.occupations.*;
 
 public class Bounce extends SpecialDefend {
 
-	public Bounce(Player me) {
+	public Bounce(UnemployedMan me) {
 		super("µ¯",me);
 	}
 	
@@ -19,7 +19,7 @@ public class Bounce extends SpecialDefend {
 	}
 	
 	@Override
-	public boolean onAttacked(Attack[] othersAttack, int othersLength, Player otherPlayer) {
+	public boolean onAttacked(Attack[] othersAttack, int othersLength, UnemployedMan otherPlayer) {
 		
 		return false;
 	}

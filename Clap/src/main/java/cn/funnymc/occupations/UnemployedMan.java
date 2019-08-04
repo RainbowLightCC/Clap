@@ -5,7 +5,7 @@ import cn.funnymc.actions.*;
  * 原版人
  * @author 滑稽神
  */
-public class Player {
+public class UnemployedMan {
 	private int health=6,biscuits=0;
 	private String name="";
 	/**
@@ -34,7 +34,7 @@ public class Player {
 	 * @param health - 生命值
 	 * @param name - 玩家名
 	 */
-	public Player(int health, String name) {
+	public UnemployedMan(int health, String name) {
 		this.health=health;
 		this.name=name;
 	}
