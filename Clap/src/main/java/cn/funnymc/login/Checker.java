@@ -1,33 +1,49 @@
 package cn.funnymc.login;
 
+import cn.funnymc.util.Filter;
+
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import cn.funnymc.login.MySQL;
-import cn.funnymc.util.Filter;
+import java.sql.Statement;
 /**
- * Á¬½ÓMySQL½øĞĞµÇÂ½×´Ì¬/ÓÃ»§¼ì²é
+ * è¿æ¥MySQLè¿›è¡Œç™»é™†çŠ¶æ€/ç”¨æˆ·æ£€æŸ¥
  * @author FunnyCrafter
  */
 public class Checker {
 	/**
-	 * ¼ì²étoken£¬·µ»ØÓÃ»§Ãû
+	 * æ£€æŸ¥tokenï¼Œè¿”å›ç”¨æˆ·å
 	 * 
-	 * ***¿ÉÄÜÎªnull£¡
-	 * @param token:´Ó/login/login_token.php»ñµÃµÄtoken
+	 * ***å¯èƒ½ä¸ºnullï¼
+	 * @param token:ä»/login/login_token.phpè·å¾—çš„token
 	 * @return id or null if token is invalid
 	 */
 	public static String checkToken(String token) {
 		token=Filter.filter(token);
 		String sql="SELECT * FROM `token` where token='"+token+"'";
 		System.out.println("MySQL Query: "+sql);
-		try {
-			ResultSet rs=MySQL.query(sql);
+		ResultSet rs = null;
+		Statement stmt = null;
+		Connection conn=MySQL.getConn();
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
 			if(rs.next()) {
 				return rs.getString("name");
 			}
-		}catch(SQLException e) {
+		}catch(SQLException se){
+			se.printStackTrace();
+		}catch(Exception e){
 			e.printStackTrace();
+		}finally{
+			try{
+				if(stmt!=null) stmt.close();
+			}catch(SQLException se2){}
+			try{
+				if(conn!=null) conn.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}
 		}
 		return null;
 	}

@@ -1,9 +1,8 @@
 package cn.funnymc.server;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-
+import cn.funnymc.game.GamesManager;
 import cn.funnymc.game.Player;
+import cn.funnymc.login.Checker;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.exceptions.InvalidDataException;
@@ -11,9 +10,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
 
-import cn.funnymc.game.Game;
-import cn.funnymc.game.GamesManager;
-import cn.funnymc.login.Checker;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 /**
  * Websocket Clap Server.
@@ -54,15 +52,27 @@ public class Clap extends WebSocketServer {
 	}
 
 	/**
+	 * IMPORTANT: Websocket Interaction Document
 	 * Client -> Server
 	 * SAY <Text>
-	 * PLAY //<Setup>(Json)
+	 * PLAY <Setup>(Json)
 	 * CLAP <Action>(Json)
 	 *
 	 * Server -> Client
 	 * CHAT <Username> <Message>
 	 * INFO <Type> <Message>
-	 * - INFO WAIT <...>
+	 * -- WAIT <...>
+	 * 
+	 * CLAP <Type> <Message>
+	 * -- 567 <五|六|七|走>
+	 * -- HEALTH <JSON LIST>(["name":health,...])
+	 * -- ACTION <ACTION>(Json)
+	 * -- START <PLAYER LIST>(split by , )
+	 * -- END <TIE|END|BUG|WINNER>
+	 * -- BISCUIT <JSON LIST>(["name":biscuit,...])
+	 * -- INPUT <START|END>
+	 * -- BUG <MESSAGE>
+	 * -- BURST <PLAYER NAME>
 	 */
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
@@ -76,8 +86,9 @@ public class Clap extends WebSocketServer {
 				break;
 			case "CLAP":
 				/*
-				 * TODO: [19.8.04] Send the command to Game.java
+				 * (OK): [19.8.04] Send the Json command to Game.java
 				 */
+				player.getGame().playerJSONInput(player,text);
 				break;
 			case "PLAY":
 				GamesManager.join(player);

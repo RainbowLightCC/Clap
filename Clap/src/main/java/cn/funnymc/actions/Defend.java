@@ -1,7 +1,7 @@
 package cn.funnymc.actions;
 
 public class Defend {
-	//TODO: ÉèÖÃprivate,getter,setter,javadoc
+	//TODO: è®¾ç½®private,getter,setter,javadoc
 	public boolean a_Physics,a_Wild,a_Lightning,a_Fire,a_Explosion;
 	public String name;
 	public int useB;

@@ -6,6 +6,7 @@ import org.java_websocket.WebSocket;
 public class Player {
     private WebSocket conn;
     private String name;
+    private Game game;
     public Player(WebSocket conn, String name){
         this.conn = conn;
         this.name = name;
@@ -23,5 +24,10 @@ public class Player {
     }
     public void setClapper(UnemployedMan clapper){
         this.clapper=clapper;
+    }
+    public void setGame(Game game){this.game=game;}
+    public Game getGame(){return game;}
+    public boolean isOffline(){
+        return conn.isClosed();
     }
 }

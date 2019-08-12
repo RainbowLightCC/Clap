@@ -1,19 +1,19 @@
 package cn.funnymc;
 
-import java.net.UnknownHostException;
+import cn.funnymc.login.MySQL;
+import cn.funnymc.server.Clap;
 
-import cn.funnymc.server.*;
-import cn.funnymc.login.*;
+import java.net.UnknownHostException;
 /**
- * ÅÄÊÖÓÎÏ·³ÌĞòÈë¿Ú
+ * æ‹æ‰‹æ¸¸æˆç¨‹åºå…¥å£
  * @author TheFunnyCrafter
  */
 public class Main {
 	public static void main(String[] args) throws UnknownHostException {
 		System.out.println("Starting Clapping Game Server...");
-		//ÔÚ10087¶Ë¿ÚÉÏÆô¶¯Clap·şÎñÆ÷
+		//åœ¨10087ç«¯å£ä¸Šå¯åŠ¨ClapæœåŠ¡å™¨
 		new Clap(10087).start();
-		//³õÊ¼»¯MySQL
+		//åˆå§‹åŒ–MySQL
 		MySQL.getPassword();
 		MySQL.getConn();
 	}

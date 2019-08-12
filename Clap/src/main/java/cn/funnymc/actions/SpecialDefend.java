@@ -1,6 +1,6 @@
 package cn.funnymc.actions;
 
-import cn.funnymc.occupations.*;
+import cn.funnymc.occupations.UnemployedMan;
 
 public class SpecialDefend {
 	//TODO: getter,setter,private,javadocs...
@@ -11,16 +11,16 @@ public class SpecialDefend {
 		this.me=me;
 	}
 	/**
-	 * Ê¹ÓÃÊ±Ö´ĞĞ
+	 * ä½¿ç”¨æ—¶æ‰§è¡Œ
 	 */
 	public void onExecuted() {
 		
 	}
 	/**
-	 * ±»¹¥»÷Ê±Ö´ĞĞ
-	 * @param othersAttack - ±ğÈËµÄ¹¥»÷ÁĞ±í
-	 * @param othersLength -±ğÈËµÄ¹¥»÷ÁĞ±í³¤¶È
-	 * @return ÊÇ·ñÇĞ»ØºÏ
+	 * è¢«æ”»å‡»æ—¶æ‰§è¡Œ
+	 * @param othersAttack - åˆ«äººçš„æ”»å‡»åˆ—è¡¨
+	 * @param othersLength -åˆ«äººçš„æ”»å‡»åˆ—è¡¨é•¿åº¦
+	 * @return æ˜¯å¦åˆ‡å›åˆ
 	 */
 	public boolean onAttacked(Attack[] othersAttack, int othersLength, UnemployedMan otherPlayer) {
 		return false;

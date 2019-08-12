@@ -1,94 +1,98 @@
 package cn.funnymc.occupations;
 
-import cn.funnymc.actions.*;
+import cn.funnymc.actions.Attack;
+import cn.funnymc.actions.Defend;
+
+import java.util.List;
+
 /**
- * Ô­°æÈË
- * @author »¬»üÉñ
+ * åŸç‰ˆäºº
+ * @author æ»‘ç¨½ç¥
  */
 public class UnemployedMan {
-	private int health=6,biscuits=0;
+	private int health,biscuits=0;
 	private String name="";
 	/**
-	 * »ñµÃÉúÃüÖµ
-	 * @return ÉúÃüÖµ
+	 * è·å¾—ç”Ÿå‘½å€¼
+	 * @return ç”Ÿå‘½å€¼
 	 */
 	public int getHealth() {return this.health;}
 	/**
-	 * »ñµÃÍæ¼ÒÃû
-	 * @return Íæ¼ÒÃû
+	 * è·å¾—ç©å®¶å
+	 * @return ç©å®¶å
 	 */
 	public String getName() {return this.name;}
 	/**
-	 * »ñµÃ±ıÊı
-	 * @return ±ıÊı
+	 * è·å¾—é¥¼æ•°
+	 * @return é¥¼æ•°
 	 */
 	public int getBiscuits() {return this.biscuits;}
 	public void setBiscuits(int biscuits) {this.biscuits=biscuits;}
 	/**
-	 * »ñµÃÖ°ÒµÃû
-	 * @return Ö°ÒµÃû
+	 * è·å¾—èŒä¸šå
+	 * @return èŒä¸šå
 	 */
-	public String getOccupationName() {return "Ô­°æÈË";}
+	public String getOccupationName() {return "åŸç‰ˆäºº";}
 	/**
-	 * Éú³ÉÒ»¸öBasicMan(Ô­°æÈË)
-	 * @param health - ÉúÃüÖµ
-	 * @param name - Íæ¼ÒÃû
+	 * ç”Ÿæˆä¸€ä¸ªBasicMan(åŸç‰ˆäºº)
+	 * @param health - ç”Ÿå‘½å€¼
+	 * @param name - ç©å®¶å
 	 */
 	public UnemployedMan(int health, String name) {
 		this.health=health;
 		this.name=name;
 	}
 	/*====================
-	    »ù´¡·½·¨ºÍÓÎÏ·ÄÚ·½·¨µÄ·Ö¸îÏß
+	    åŸºç¡€æ–¹æ³•å’Œæ¸¸æˆå†…æ–¹æ³•çš„åˆ†å‰²çº¿
 	  ====================*/
-	//Attack ¹¥»÷
-	protected Attack
+	//Attack æ”»å‡»
+	private Attack
 		sa=new Attack("sa","Physics","Physics",this.name,1,1,3),
 		tin=new Attack("tin","Physics","Physics",this.name,1,3,1),
-		arrows=new Attack("Íò¼ı","Physics","Magic",this.name,2,2,2),
-		wildForce=new Attack("ÄÏÂù","Wild","Magic",this.name,3,3,3),
-		lightning=new Attack("ÉÁµç","Lightning","Magic",this.name,4,4,4),
-		fire=new Attack("»ğÎè","Fire","Magic",this.name,5,5,5),
-		explosion=new Attack("ºË±¬","Explosion","Magic",this.name,6,6,6);
+		arrows=new Attack("ä¸‡ç®­","Physics","Magic",this.name,2,2,2),
+		wildForce=new Attack("å—è›®","Wild","Magic",this.name,3,3,3),
+		lightning=new Attack("é—ªç”µ","Lightning","Magic",this.name,4,4,4),
+		fire=new Attack("ç«èˆ","Fire","Magic",this.name,5,5,5),
+		explosion=new Attack("æ ¸çˆ†","Explosion","Magic",this.name,6,6,6);
 	
-	//Defend ·ÀÓù
-	protected Defend
-		biscuit=new Defend(false,false,false,false,true,"±ı",-1),
-		defendPhysics=new Defend(true,false,false,false,false,"·À",0),
-		defendWild=new Defend(false,true,false,false,false,"·ÀÄÏ",0),
-		defendLightning=new Defend(false,false,true,false,false,"·ÀÉÁ",0),
-		defendFire=new Defend(false,false,false,true,false,"·À»ğ",0);
+	//Defend é˜²å¾¡
+	private Defend
+		biscuit=new Defend(false,false,false,false,true,"é¥¼",-1),
+		defendPhysics=new Defend(true,false,false,false,false,"é˜²",0),
+		defendWild=new Defend(false,true,false,false,false,"é˜²å—",0),
+		defendLightning=new Defend(false,false,true,false,false,"é˜²é—ª",0),
+		defendFire=new Defend(false,false,false,true,false,"é˜²ç«",0);
 	
 	/**
-	 * »ñµÃ¹¥»÷ÁĞ±í
-	 * @return ¹¥»÷ÁĞ±í
+	 * è·å¾—æ”»å‡»åˆ—è¡¨
+	 * @return æ”»å‡»åˆ—è¡¨
 	 */
 	public Attack[] getAttackList() {
 		return new Attack[] {sa,tin,arrows,wildForce,lightning,fire,explosion};
 	}
 	/**
-	 * »ñµÃ·ÀÓùÁĞ±í
-	 * @return ·ÀÓùÁĞ±í
+	 * è·å¾—é˜²å¾¡åˆ—è¡¨
+	 * @return é˜²å¾¡åˆ—è¡¨
 	 */
 	public Defend[] getDefendList() {
 		return new Defend[] {biscuit,defendPhysics,defendWild,defendLightning,defendFire};
 	}
 	/**
-	 * ³õÊ¼»¯
-	 * £¨Ê²Ã´Ò²²»×ö£©
+	 * åˆå§‹åŒ–
+	 * ï¼ˆä»€ä¹ˆä¹Ÿä¸åšï¼‰
 	 */
 	public void init() {
 		
 	}
 	
 	/**
-	 * ¼ì²é±¬µã
-	 * @return ÊÇ·ñ±¬µã
-	 * @param mine ÎÒµÄ¹¥»÷ÁĞ±í
+	 * æ£€æŸ¥çˆ†ç‚¹
+	 * @return æ˜¯å¦çˆ†ç‚¹
+	 * @param mine æˆ‘çš„æ”»å‡»åˆ—è¡¨
 	 */
-	public boolean checkAfterInput(Attack[] mine,int mineLength) {
-		for(int i=0;i<mineLength;i++) {
-			this.biscuits-=mine[i].useB;
+	public boolean checkAfterInput(List<Attack> mine) {
+		for(Attack i:mine) {
+			this.biscuits-=i.useB;
 		}
 		if(this.getBiscuits()<0) {
 			if(this.health>0)this.health=0;
@@ -98,9 +102,9 @@ public class UnemployedMan {
 		return false;
 	}
 	/**
-	 * ¼ì²é±¬µã
-	 * @param mine ÎÒµÄ·ÀÓù
-	 * @return ÊÇ·ñ±¬µã
+	 * æ£€æŸ¥çˆ†ç‚¹
+	 * @param mine æˆ‘çš„é˜²å¾¡
+	 * @return æ˜¯å¦çˆ†ç‚¹
 	 */
 	public boolean checkAfterInput(Defend mine) {
 		this.biscuits-=mine.useB;
@@ -111,22 +115,25 @@ public class UnemployedMan {
 		return false;
 	}
 	/**
-	 * Á½·½¹¥»÷µÖÏû
-	 * @param mineAttack - ¼º·½¹¥»÷ÁĞ±í
-	 * @param othersAttack - ¶Ô·½¹¥»÷ÁĞ±í
-	 * @return ÊÇ·ñÇĞ»ØºÏ
+	 * ä¸¤æ–¹æ”»å‡»æŠµæ¶ˆ
+	 * @param mineAttack - å·±æ–¹æ”»å‡»åˆ—è¡¨
+	 * @param othersAttack - å¯¹æ–¹æ”»å‡»åˆ—è¡¨
+	 * @return æ˜¯å¦åˆ‡å›åˆ
 	 */
-	public boolean onCounteract(Attack[] mineAttack,Attack[] othersAttack,int mineLength,int othersLength) {
-		Attack[] mine=mineAttack.clone(),others=othersAttack.clone();
+	public boolean onCounteract(List<Attack> mineAttack,List<Attack> othersAttack) {
+		//åƒå±äº†ï¼Œè¦æ”¹è¿™ä¹ˆå¤š
+		//TODO ä¸‹é¢ä¸¤è¡Œæ˜¯æ€¥æ•‘æªæ–½ ä»¥åå†æ”¹
+		Attack[] mine= (Attack[]) mineAttack.toArray(),others= (Attack[]) othersAttack.toArray();
+		int mineLength=mineAttack.size(),othersLength=othersAttack.size();
 		int minePos=0,othersPos=0;
 		boolean endRound=false;
 		while(minePos<mineLength&&othersPos<othersLength) {
-			//ÏàÍ¬ÔòµÖÏû
+			//ç›¸åŒåˆ™æŠµæ¶ˆ
 			if(mine[minePos].defend==others[othersPos].defend) {
 				minePos++;othersPos++;
 				continue;
 			}
-			//saÓöµ½tintin
+			//saé‡åˆ°tintin
 			if(othersLength-othersPos>=2&&mine[minePos].name.equals("sa")
 					&&others[othersPos].name.equals("tin")&&others[othersPos+1].name.equals("tin")) {
 				minePos++;othersPos+=2;
@@ -137,7 +144,7 @@ public class UnemployedMan {
 				minePos+=2;othersPos++;
 				continue;
 			}
-			//saÓöµ½tin
+			//saé‡åˆ°tin
 			if(mine[minePos].name.equals("sa")&&others[othersPos].name.equals("tin")) {
 				this.health++;
 				endRound=true;
@@ -150,7 +157,7 @@ public class UnemployedMan {
 				minePos++;othersPos++;
 				continue;
 			}
-			//µÖÏûÖµÏà±È
+			//æŠµæ¶ˆå€¼ç›¸æ¯”
 			if(others[othersPos].defend<mine[minePos].defend) {
 				if(mine[minePos].harm-others[othersPos].defend>0) {
 					mine[minePos].harm-=others[othersPos].defend;
@@ -181,30 +188,29 @@ public class UnemployedMan {
 		return endRound;
 	}
 	/**
-	 * ×Ô¼º·À×¡±ğÈË
-	 * @param mine ÎÒµÄ·ÀÓù
-	 * @param othersAttack ¶Ô·½µÄ¹¥»÷ÁĞ±í
-	 * @return ÊÇ·ñÇĞ»ØºÏ
+	 * è‡ªå·±é˜²ä½åˆ«äºº
+	 * @param mine æˆ‘çš„é˜²å¾¡
+	 * @param others å¯¹æ–¹çš„æ”»å‡»åˆ—è¡¨
+	 * @return æ˜¯å¦åˆ‡å›åˆ
 	 */
-	public boolean onDefend(Defend mine,Attack[] othersAttack,int othersLength) {
-		Attack[] others=othersAttack.clone();
+	public boolean onDefend(Defend mine,List<Attack> others) {
 		boolean endRound=false;
-		for(int i=0;i<othersLength;i++) {
-			if((others[i].attribute.equals("Physics")&&!mine.a_Physics)||
-				(others[i].attribute.equals("Wild")&&!mine.a_Wild)||
-				(others[i].attribute.equals("Lightning")&&!mine.a_Lightning)||
-				(others[i].attribute.equals("Fire")&&!mine.a_Fire)||
-				(others[i].attribute.equals("Explosion")&&!mine.a_Explosion)
+		for(Attack i:others) {
+			if((i.attribute.equals("Physics")&&!mine.a_Physics)||
+				(i.attribute.equals("Wild")&&!mine.a_Wild)||
+				(i.attribute.equals("Lightning")&&!mine.a_Lightning)||
+				(i.attribute.equals("Fire")&&!mine.a_Fire)||
+				(i.attribute.equals("Explosion")&&!mine.a_Explosion)
 					) {
 				endRound=true;
-				this.health-=others[i].harm;
+				this.health-=i.harm;
 			}
 		}
 		return endRound;
 	}
 	/**
-	 * ÇĞ»ØºÏºó¼ì²é
-	 * @return ÓĞÃ»ÓĞÈ¥ÊÀ
+	 * åˆ‡å›åˆåæ£€æŸ¥
+	 * @return true if å»ä¸–
 	 */
 	public boolean checkAfterRound() {
 		this.biscuits=0;

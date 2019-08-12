@@ -1,21 +1,30 @@
 package cn.funnymc.actions;
+
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
- * ¹¥»÷ÕĞÊ½
- * @author »¬»üÉñ
+ * æ”»å‡»æ‹›å¼
+ * @author æ»‘ç¨½ç¥
  */
 public class Attack {
-	//TODO ¸ø²ÎÊıÉè³Éprivate²¢Ìí¼Ógetter/setter
-	public String name,attribute,type,sender;
+	//TODO ç»™å‚æ•°è®¾æˆprivateå¹¶æ·»åŠ getter/setter
+	@JSONField(name="action")
+	public String name;
+	@JSONField(name="attribute")
+	public String attribute;
+	@JSONField(name="type")
+	public String type;
+	public String sender;
 	public int useB,harm,defend;
 	/**
-	 * ³õÊ¼»¯¹¥»÷ÕĞÊ½
-	 * @param name Ãû×Ö
-	 * @param attribute ÊôĞÔ Physics,Wild,Lightning,Fire,Explosion
-	 * @param type ÀàĞÍ Physics,Magic,Special
-	 * @param sender ·¢ËÍÕß
-	 * @param useB ÓÃ±ı
-	 * @param harm ÉËº¦Öµ
-	 * @param defend µÖÏûÖµ
+	 * åˆå§‹åŒ–æ”»å‡»æ‹›å¼
+	 * @param name åå­—
+	 * @param attribute å±æ€§ Physics,Wild,Lightning,Fire,Explosion
+	 * @param type ç±»å‹ Physics,Magic,Special
+	 * @param sender å‘é€è€…
+	 * @param useB ç”¨é¥¼
+	 * @param harm ä¼¤å®³å€¼
+	 * @param defend æŠµæ¶ˆå€¼
 	 */
 	public Attack(String name,String attribute,String type,String sender,int useB,int harm,int defend) {
 		this.name=name;
@@ -28,5 +37,4 @@ public class Attack {
 		this.harm=harm;
 		this.defend=defend;
 	}
-	
 }

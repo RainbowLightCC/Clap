@@ -4,7 +4,7 @@ import java.io.*;
 import java.sql.*;
 
 /**
- * ·ÃÎÊ±¾µØMySQL/lamp
+ * ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½MySQL/lamp
  * @author lcj
  */
 public class MySQL {
@@ -32,7 +32,7 @@ public class MySQL {
 		}
 	}
 	/**
-	 * Á¬½ÓÊý¾Ý¿â
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½
 	 */
 	public static void getConn() {
 		try{
@@ -45,7 +45,7 @@ public class MySQL {
 		}
 	}
 	/**
-	 * ½áÊø£¬¹Ø±ÕÁ¬½Ó
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public static void end() {
 		try{
@@ -55,15 +55,15 @@ public class MySQL {
 		}
 	}
 	/**
-	 * Ö´ÐÐÒ»¸ö²éÑ¯Óï¾ä
-	 * @param sql SQLÓï¾ä
-	 * @return ²éÑ¯½á¹ûResultSet
+	 * Ö´ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½
+	 * @param sql SQLï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ResultSet
 	 */
 	public static ResultSet query(String sql) {
 		System.out.println("MySQL Query: "+sql);
 		ResultSet rs = null;
 		Statement stmt = null;
-		//¼ì²éÁ¬½Ó¹ýÆÚ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½
 		try {conn.getNetworkTimeout();}
 		catch (SQLException e) {
 			getConn();
@@ -88,14 +88,14 @@ public class MySQL {
 		return rs;
 	}
 	/**
-	 * Ö´ÐÐÒ»¸ö¸üÐÂÓï¾ä
-	 * @param sql SQLÓï¾ä
-	 * @return ²éÑ¯½á¹ûResultSet
+	 * Ö´ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param sql SQLï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ResultSet
 	 */
 	public static void update(String sql) {
 		System.out.println("MySQL Update: "+sql);
 		Statement stmt = null;
-		//¼ì²éÁ¬½Ó¹ýÆÚ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½
 		try {conn.getNetworkTimeout();}
 		catch (SQLException e) {
 			getConn();

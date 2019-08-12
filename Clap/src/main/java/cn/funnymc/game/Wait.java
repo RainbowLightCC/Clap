@@ -25,9 +25,9 @@ public class Wait{
      * @param newPlayer
      */
     public void addPlayer(Player newPlayer){
-        newPlayer.sendMessage("INFO WAIT ");
         players.add(newPlayer);
         playersNum++;
+        newPlayer.sendMessage("INFO WAIT "+playersNum+" of "+maxPlayersNum);
     }
 
     public boolean isFull(){

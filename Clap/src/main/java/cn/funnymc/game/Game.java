@@ -1,21 +1,26 @@
 package cn.funnymc.game;
 
-import cn.funnymc.occupations.*;
+import cn.funnymc.actions.Attack;
+import cn.funnymc.actions.Bounce;
+import cn.funnymc.actions.Defend;
+import cn.funnymc.occupations.UnemployedMan;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
-import cn.funnymc.actions.*;
+import java.util.List;
 
 /**
- * TODO: think about how to use "gameId"
+ * A Traditional 1v1 Clapping Game 
+ * TODO: Make a lot of things private
  */
 public class Game {
 	public Player player1, player2;
     public boolean isGameRunning=false,isGameCompleted=false,isDoingInput=false;
     public boolean isBounce1=false,isBounce2=false;
-    public int attack1Length=0,attack2Length=0;
     private int gameId;
-    public Attack[] attack1=new Attack[128],attack2=new Attack[128];
+    public List<Attack> attack1=new ArrayList<>(),attack2=new ArrayList<>();
     public Defend defend1,defend2;
     public HashMap<String,Attack> attackMap1,attackMap2;
     public HashMap<String,Defend> defendMap1,defendMap2;
@@ -23,50 +28,78 @@ public class Game {
     private void end() {
     	GamesManager.end(this);
     }
-	public void playerAttack(String playerName,String input) {
-		if(playerName.equals(player1.getName())){
-			attack1[attack1Length++]=attackMap1.get(input);
-		}else if(playerName.equals(player2.getName())) {
-			attack2[attack2Length++]=attackMap2.get(input);
+	public void playerAttack(Player player,String input) {
+		if(player.equals(player1)){
+			attack1.add(attackMap1.get(input));
+		}else if(player.equals(player2)) {
+			attack2.add(attackMap2.get(input));
 		}
 	}
-	public void playerDefend(String playerName,String input) {
-		if(playerName.equals(player1.getName())){
+	public void playerDefend(Player player,String input) {
+		if(player.equals(player1)){
 			defend1=defendMap1.get(input);
-		}else if(playerName.equals(player2.getName())) {
+		}else if(player.equals(player2)) {
 			defend2=defendMap2.get(input);
 		}
 	}
-	public Game(){
-		//TODO
-	}
+
+    /**
+     * ç©å®¶è¾“å…¥æ‹›å¼
+     * @param player ç©å®¶
+     * @param inputJson è¾“å…¥æ‹›å¼çš„JSON
+     */
+	public void playerJSONInput(Player player,String inputJson){
+        JSONObject jsonObject=JSON.parseObject(inputJson);
+        if(jsonObject.containsKey("special")){
+			JSONObject special=jsonObject.getJSONObject("special");
+			if(special.containsKey("action")&&special.get("action").equals("bounce")){
+				if(player.equals(player1))isBounce1=true;
+				else if(player.equals(player2))isBounce2=true;
+			}
+		};
+		if(jsonObject.containsKey("defend")){
+			JSONObject defend=jsonObject.getJSONObject("defend");
+			if(defend.containsKey("action")){
+				playerDefend(player,defend.getString("action"));
+			}
+		};
+		if(jsonObject.containsKey("attack")){
+			JSONObject attack=jsonObject.getJSONObject("attack");
+			if(attack.containsKey("action")){
+				playerAttack(player,attack.getString("action"));
+			}
+		}
+    }
 	public void newPlayer(Player player) {
 		if(player1==null) {
 			player1.setClapper(new UnemployedMan(6,player.getName()));
+			player1.setGame(this);
 		}
 		else if(player2==null) {
 			player2.setClapper(new UnemployedMan(6,player.getName()));
+			player2.setGame(this);
 		}
 	}
 	private void broadcast(String msg) {
-		player1.sendMessage(msg);
+    	if(!player1.isOffline())player1.sendMessage(msg);
+    	if(!player2.isOffline())player2.sendMessage(msg);
 	}
 	/**
-     * ÎåÁùÆß×ß
+     * äº”å…­ä¸ƒèµ°
      * @throws InterruptedException 
      */
     private void clap567() throws InterruptedException {
     	Thread.sleep(500);
-    	broadcast("clap 567 Îå");
+    	broadcast("CLAP 567 äº”");
     	Thread.sleep(500);
-    	broadcast("clap 567 Áù");
+    	broadcast("CLAP 567 å…­");
     	Thread.sleep(500);
-    	broadcast("clap 567 Æß");
+    	broadcast("CLAP 567 ä¸ƒ");
     	Thread.sleep(500);
-    	broadcast("clap 567 ×ß");
+    	broadcast("CLAP 567 èµ°");
     }
     /**
-     * ¹¥»÷·ÀÓùÃû³Æ±í
+     * æ”»å‡»é˜²å¾¡åç§°è¡¨
      */
     private void buildHashMaps() {
     	attackMap1=new HashMap<String, Attack>();
@@ -85,170 +118,163 @@ public class Game {
 	    			isGameRunning=true;
 	    			isGameCompleted=false;
 	    			buildHashMaps();
-					player1.sendMessage("gameinfo start");
-					player2.sendMessage("gameinfo start");
-					//ÓÎÏ·±¾Ìå
+					broadcast("CLAP START "+player1.getName()+","+player2.getName());
+					//æ¸¸æˆæœ¬ä½“
 					player1.getClapper().init();
 					player2.getClapper().init();
-					while(true) {//»ØºÏ
-						//½áÊøÓÎÏ· Âğ
+					while(true) {//å›åˆ
+						//ç»“æŸæ¸¸æˆ å—
 						if(!isGameRunning) {
 							break;
 						}
-						//±¨ÑªÁ¿
-						broadcast("info * "+player1.getName()+" ÑªÁ¿£º"+player1.getClapper().getHealth());
-						broadcast("info * "+player2.getName()+" ÑªÁ¿£º"+player2.getClapper().getHealth());
+						//æŠ¥è¡€é‡
+						broadcast("CLAP HEALTH [\""+player1.getName()+"\":"+player1.getClapper().getHealth()+
+								",\""+player2.getName()+"\":"+player2.getClapper().getHealth()+"]");
 						if(player1.getClapper().checkAfterRound()&&player2.getClapper().checkAfterRound()) {
-							broadcast("info ** Á½¸öÈË¶¼È¥ÊÀ¡ª¡ªÆ½¾ÖÁË£¡");
+							broadcast("CLAP END TIE");
 							break;
 						}
 						else if(player1.getClapper().checkAfterRound()) {
-							broadcast("info ** "+player1.getName()+" È¥ÊÀÁË£¡");
-							broadcast("info ** ´óÓ®¼Ò£º"+player2.getName());
+							broadcast("CLAP END "+player2.getName());
 							break;
 						}
 						else if(player2.getClapper().checkAfterRound()) {
-							broadcast("info ** "+player2.getName()+" È¥ÊÀÁË£¡");
-							broadcast("info ** ´óÓ®¼Ò£º"+player1.getName());
+                            broadcast("CLAP END "+player1.getName());
 							break;
 						}
-						clap567();//ÎåÁùÆß×ß
-						while(true) {//ÅÄ
+						clap567();//äº”å…­ä¸ƒèµ°
+						while(true) {//æ‹
 							boolean endRound=false;
-							//Çå¿ÕÊäÈë
-							attack1=new Attack[128];attack2=new Attack[128];
-							attack1Length=0;attack2Length=0;
+							//æ¸…ç©ºè¾“å…¥
+							/*
+							 è¿œå¤ä»£ç æ”¹è¿›
+							 (OK) Phase 1:æ”¹è¿›Attackå†™æ³•
+							 TODO Phase 2:æ›´å¥½åœ°ç®¡ç†Defend(Iç±»æ‹›å¼)å’ŒAttack(IIç±»æ‹›å¼) 
+							 */
+							attack1.clear();attack2.clear();
 							defend1=null;defend2=null;
 							isBounce1=false;isBounce2=false;
-							//¹ã²¥±ıÊı
-							broadcast("info * "+player1.getName()+" ÓĞ "+player1.getClapper().getBiscuits()+" ¸ö±ı");
-							broadcast("info * "+player2.getName()+" ÓĞ "+player2.getClapper().getBiscuits()+" ¸ö±ı");
-							//ÊäÈë
-							broadcast("info ** ¿ªÊ¼Íæ¼ÒÊäÈë **");
-							player1.sendMessage("gameinfo startinput");
-							player2.sendMessage("gameinfo startinput");
+							//å¹¿æ’­é¥¼æ•°
+							broadcast("CLAP BISCUIT [\""+player1.getName()+"\":"+player1.getClapper().getBiscuits()+
+									",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"]");
+							//è¾“å…¥
+							broadcast("CLAP INPUT START");
 							isDoingInput=true;
 							Thread.sleep(3000);
-							player1.sendMessage("gameinfo endinput");
-							player2.sendMessage("gameinfo endinput");
+							broadcast("CLAP INPUT END");
 							isDoingInput=false;
-							broadcast("info ** Íæ¼ÒÊäÈëÍê³É **");
-							//×Ô¶¯³ö±ı
-							if((!isBounce1)&&defend1==null&&attack1Length==0)defend1=defendMap1.get("±ı");
-							if((!isBounce2)&&defend2==null&&attack2Length==0)defend2=defendMap2.get("±ı");
-							//¹ã²¥ÊäÈë½á¹û
+							//è‡ªåŠ¨å‡ºé¥¼
+							if((!isBounce1)&&defend1==null&&attack1.isEmpty())defend1=defendMap1.get("é¥¼");
+							if((!isBounce2)&&defend2==null&&attack2.isEmpty())defend2=defendMap2.get("é¥¼");
+							//å¹¿æ’­è¾“å…¥ç»“æœ
 							if(isBounce1) {
 								new Bounce(player1.getClapper()).onExecuted();
-								broadcast("info * "+player1.getName()+" ³öÁËµ¯");
+								broadcast("CLAP ACTION {\"special\":{\"action\":\"bounce\"}," +
+										"\"sender\":\""+player1.getName()+"\"}");
 							}
-							else if(defend1!=null)broadcast("info * "+player1.getName()+" ÊäÈëÁË·ÀÓù£º"+defend1.name);
+							else if(defend1!=null){
+							    broadcast("CLAP ACTION {\"defend\":{\"action\":\""
+                                        +defend1.name+"\"},\"sender\":\""+player1.getName()+"\"}");
+                            }
 							else {
-								broadcast("info * "+player1.getName()+" ÊäÈëÁË¹¥»÷£º");
-								for(int i=0;i<attack1Length;i++) {
-									broadcast("info - "+attack1[i].name);
-								}
+								broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack1)
+                                        +",\"sender\":\""+player1.getName()+"\"}");
 							}
-							if(isBounce2) {
-								new Bounce(player2.getClapper()).onExecuted();
-								broadcast("info * "+player2.getName()+" ³öÁËµ¯");
-							}
-							else if(defend2!=null)broadcast("info * "+player2.getName()+" ÊäÈëÁË·ÀÓù£º"+defend2.name);
-							else {
-								broadcast("info * "+player2.getName()+" ÊäÈëÁË¹¥»÷£º");
-								for(int i=0;i<attack2Length;i++) {
-									broadcast("info - "+attack2[i].name);
-								}
-							}
-							//ÅĞ¶Ï±¬µã
+                            if(isBounce2) {
+                                new Bounce(player2.getClapper()).onExecuted();
+                                broadcast("CLAP ACTION {\"special\":{\"action\":\"bounce\"}," +
+                                        "\"sender\":\""+player2.getName()+"\"}");
+                            }
+                            else if(defend2!=null){
+                                broadcast("CLAP ACTION {\"defend\":{\"action\":\""
+                                        +defend2.name+"\"},\"sender\":\""+player2.getName()+"\"}");
+                            }
+                            else {
+                                broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack2)
+                                        +",\"sender\":\""+player2.getName()+"\"}");
+                            }
+							//åˆ¤æ–­çˆ†ç‚¹
 							if((defend1!=null&&player1.getClapper().checkAfterInput(defend1))||
-									(defend1==null&&player1.getClapper().checkAfterInput(attack1,attack1Length))) {
-								broadcast("info * "+player1.getName()+" ±¬µã");
+									(defend1==null&&player1.getClapper().checkAfterInput(attack1))) {
+								broadcast("CLAP BURST "+player1.getName());
 								endRound=true;
 							}
 							if((defend2!=null&&player2.getClapper().checkAfterInput(defend2))||
-									(defend2==null&&player2.getClapper().checkAfterInput(attack2,attack2Length))) {
-								broadcast("info * "+player2.getName()+" ±¬µã");
+									(defend2==null&&player2.getClapper().checkAfterInput(attack2))) {
+								broadcast("CLAP BURST "+player2.getName());
 								endRound=true;
 							}
 							if(endRound)break;
-							//ÅĞ¶Ïµ¯
+							//åˆ¤æ–­å¼¹ TODO: Think of a better way to process Bounce
 							if(isBounce1&&isBounce2)continue;
 							if(isBounce1&&defend2==null) {
-								for(int i=0;i<attack2Length;i++) {
-									if(!attack2[i].attribute.equals("Explosion"))
-										attack1[attack1Length++]=attack2[i];
+								for(Attack i:attack2) {
+									if(!i.attribute.equals("Explosion"))
+										attack1.add(i);
 								}
-								attack2Length=0;
-								defend2=new Defend(false,false,false,false,false,"¿Õ",0);
+								attack2.clear();
+								defend2=new Defend(false,false,false,false,false,"ç©º",0);
 							}
 							else if(isBounce2&&defend1==null) {
-								for(int i=0;i<attack1Length;i++) {
-									if(!attack1[i].attribute.equals("Explosion"))
-										attack2[attack2Length++]=attack1[i];
+								for(Attack i:attack1) {
+									if(!i.attribute.equals("Explosion"))
+										attack2.add(i);
 								}
-								attack1Length=0;
-								defend1=new Defend(false,false,false,false,false,"¿Õ",0);
+								attack1.clear();
+								defend1=new Defend(false,false,false,false,false,"ç©º",0);
 							}
-							//µÖÏû
+							//æŠµæ¶ˆ
 							if(defend1!=null&&defend2!=null) {
-								//¶¼·ÀÓù
-								//Ê²Ã´Ò²²»×ö
+								//éƒ½é˜²å¾¡
+								//ä»€ä¹ˆä¹Ÿä¸åš
 							}
 							else if(defend1==null&&defend2!=null) {
-								//1¹¥»÷ 2·ÀÓù
-								endRound=player2.getClapper().onDefend(defend2,attack1,attack1Length);
+								//1æ”»å‡» 2é˜²å¾¡
+								endRound=player2.getClapper().onDefend(defend2,attack1);
 							}else if(defend2==null&&defend1!=null) {
-								//2¹¥»÷ 1·ÀÓù
-								endRound=player1.getClapper().onDefend(defend1,attack2,attack2Length);
+								//2æ”»å‡» 1é˜²å¾¡
+								endRound=player1.getClapper().onDefend(defend1,attack2);
 							}else if(defend1==null&&defend2==null) {
-								//¶¼¹¥»÷
-								endRound=player1.getClapper().onCounteract(attack1,attack2,attack1Length,attack2Length);
-								endRound=player2.getClapper().onCounteract(attack2,attack1,attack2Length,attack1Length)||endRound;
+								//éƒ½æ”»å‡»
+								endRound=player1.getClapper().onCounteract(attack1,attack2);
+								endRound=player2.getClapper().onCounteract(attack2,attack1)||endRound;
 							}
-							//ÇĞ»ØºÏ
+							//åˆ‡å›åˆ
 							if(endRound)break;
 						}
 					}
-					player1.sendMessage("gameinfo end");
-					player2.sendMessage("gameinfo end");
+					broadcast("CLAP END END");
 					isGameCompleted=true;
 				} catch (Exception e) {
-					System.out.println("½øÈëcatch");
-					//Ïû·Ñ¹ıÊÀÍæ¼Ò
-					if(player1==null&&player2==null) {
+					//æ¶ˆè´¹è¿‡ä¸–ç©å®¶
+					if(player1.isOffline()&&player2.isOffline()) {
 						isGameCompleted=true;
 						isGameRunning=false;
-						broadcast("info ** Á½¸öÈË¶¼ÀëÏß¡ª¡ªÆ½¾ÖÁË£¡");
 					}
-					if(player1==null) {
+					else if(player1.isOffline()) {
 						isGameCompleted=true;
 						isGameRunning=false;
-						broadcast("info ** "+player1.getName()+" µôÏßÁË£¡");
-						broadcast("info ** ´óÓ®¼Ò£º"+player2.getName());
+						player2.sendMessage("CLAP END "+player2.getName());
 					}
-					if(player2==null) {
+					else if(player2.isOffline()) {
 						isGameCompleted=true;
 						isGameRunning=false;
-						broadcast("info ** "+player2.getName()+" µôÏßÁË£¡");
-						broadcast("info ** ´óÓ®¼Ò£º"+player1.getName());
+						player1.sendMessage("CLAP END "+player1.getName());
 					}
 					if(!isGameCompleted) {
 						e.printStackTrace();
-						broadcast("info *** ÅÄÊÖÓÎÏ·³öbugÁË£¡");
+						broadcast("CLAP BUG "+e.getMessage());
 					}
 				} finally {
-					player2.sendMessage("gameinfo end");
-					player1.sendMessage("gameinfo end");
-					player1=null;
-					player2=null;
-					player1=null;
-					player2=null;
+					broadcast("CLAP END END");//å®¢æˆ·ç«¯å¯èƒ½æ”¶åˆ°å¤šä¸ªEND END
 					isGameRunning=false;
-					if(isGameCompleted)broadcast("info ÅÄÊÖ ÓÎÏ·½áÊøÁË£¡");
-					else broadcast("info ÅÄÊÖ ÓÎÏ··ÇÕı³£½áÊøÁË£¡");
-					broadcast("info ÅÄÊÖ ÓÎÏ·½«ÔÚ5Ãëºó¹Ø±Õ");
+					if(isGameCompleted)broadcast("CLAP END END");
+					else broadcast("CLAP END BUG");
+					//äº”ç§’åå…³é—­æ‹æ‰‹
 					try {
-						Thread.sleep(6000);
+						Thread.sleep(5000);
+						player1.setGame(null);
+						player2.setGame(null);
 						end();
 					} catch (InterruptedException e) {end();}
 				}
