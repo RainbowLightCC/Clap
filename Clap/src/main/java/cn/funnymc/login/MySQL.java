@@ -1,6 +1,9 @@
 package cn.funnymc.login;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -27,14 +30,14 @@ public class MySQL {
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e1) {}
+				} catch (IOException ignored) {}
 			}
 		}
 	}
 	/**
 	 * �������ݿ�
 	 */
-	public static void getConn() {
+	public static Connection getConn() {
 		try{
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
@@ -43,6 +46,7 @@ public class MySQL {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		return conn;
 	}
 	/**
 	 * �������ر�����

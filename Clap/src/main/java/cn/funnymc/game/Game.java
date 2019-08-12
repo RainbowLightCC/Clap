@@ -16,26 +16,26 @@ import java.util.List;
  * TODO: Make a lot of things private
  */
 public class Game {
-	public Player player1, player2;
-    public boolean isGameRunning=false,isGameCompleted=false,isDoingInput=false;
-    public boolean isBounce1=false,isBounce2=false;
+	private Player player1, player2;
+    private boolean isGameRunning=false,isGameCompleted=false,isDoingInput=false;
+    private boolean isBounce1=false,isBounce2=false;
     private int gameId;
-    public List<Attack> attack1=new ArrayList<>(),attack2=new ArrayList<>();
-    public Defend defend1,defend2;
-    public HashMap<String,Attack> attackMap1,attackMap2;
-    public HashMap<String,Defend> defendMap1,defendMap2;
+    private List<Attack> attack1=new ArrayList<>(),attack2=new ArrayList<>();
+    private Defend defend1,defend2;
+    private HashMap<String,Attack> attackMap1,attackMap2;
+    private HashMap<String,Defend> defendMap1,defendMap2;
     public int getId() {return gameId;}
     private void end() {
     	GamesManager.end(this);
     }
-	public void playerAttack(Player player,String input) {
+	private void playerAttack(Player player, String input) {
 		if(player.equals(player1)){
 			attack1.add(attackMap1.get(input));
 		}else if(player.equals(player2)) {
 			attack2.add(attackMap2.get(input));
 		}
 	}
-	public void playerDefend(Player player,String input) {
+	private void playerDefend(Player player, String input) {
 		if(player.equals(player1)){
 			defend1=defendMap1.get(input);
 		}else if(player.equals(player2)) {
