@@ -1,11 +1,11 @@
 package cn.funnymc.actions;
 
-import cn.funnymc.occupations.*;
+import cn.funnymc.occupations.UnemployedMan;
 
 public class Bounce extends SpecialDefend {
 
 	public Bounce(UnemployedMan me) {
-		super("µ¯",me);
+		super("å¼¹",me);
 	}
 	
 	@Override
