@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 public class Main {
 	public static void main(String[] args) throws UnknownHostException {
 		System.out.println("Starting Clapping Game Server...");
+		
 		//在10087端口上启动Clap服务器
 		new Clap(10087).start();
 		//初始化MySQL

@@ -1,27 +1,41 @@
 package cn.funnymc.game;
 
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
-import cn.funnymc.game.Game;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Clapping Games Manager
  * @author FunnyCrafter
  * TODO: 1.Finish this TODO
  */
 public class GamesManager {
+    private GamesManager(){}
     private static Set<Game> games= new HashSet<>();
-    private static Wait wait;
-    public static void end(Game game) {
+    private static Set<MultiplayerGame> multiplayerGames=new HashSet<>();
+    private static Wait wait=new Wait(2),
+        multiplayerWait=new Wait(8);
+    static void end(Game game) {
         games.remove(game);
     }
-    public static void join(Player joiningPlayer){
-        wait.addPlayer(joiningPlayer);
-        if(wait.isFull()){
-            wait.toGame().start();
-            wait.reset();
+    static void end(MultiplayerGame game){multiplayerGames.remove(game);}
+    public static void  join(Player joiningPlayer,String json){
+        JSONObject jsonObject=JSON.parseObject(json);
+        if(!jsonObject.containsKey("type"))return;
+        if(jsonObject.getString("type").equals("traditional")){
+            if(jsonObject.getInteger("players")==2){
+                //单挑
+                wait.addPlayer(joiningPlayer);
+            }else{
+                multiplayerWait.addPlayer(joiningPlayer);
+            }
         }
+        //else 职业
     }
     public static void leave(Player leavingPlayer){
         wait.leavePlayer(leavingPlayer);
+        multiplayerWait.leavePlayer(leavingPlayer);
     }
 }

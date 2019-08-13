@@ -48,6 +48,7 @@ public class Clap extends WebSocketServer {
 	@Override
 	public void onClose(WebSocket conn,int code,String reason,boolean remote) {
 		Player player=(Player)conn.getAttachment();
+		GamesManager.leave(player);
 		System.out.println(player.getName()+" has left!");
 	}
 
@@ -91,7 +92,7 @@ public class Clap extends WebSocketServer {
 				player.getGame().playerJSONInput(player,text);
 				break;
 			case "PLAY":
-				GamesManager.join(player);
+				GamesManager.join(player,text);
 				break;
 		}
 	}

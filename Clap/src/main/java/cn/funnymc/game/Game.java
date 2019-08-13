@@ -12,19 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * A Traditional 1v1 Clapping Game 
- * TODO: Make a lot of things private
+ * A Traditional 1v1 Clapping Game
  */
 public class Game {
 	private Player player1, player2;
-    private boolean isGameRunning=false,isGameCompleted=false,isDoingInput=false;
-    private boolean isBounce1=false,isBounce2=false;
-    private int gameId;
+    private boolean isGameRunning=false;
+	private boolean isGameCompleted=false;
+	private boolean isBounce1=false,isBounce2=false;
     private List<Attack> attack1=new ArrayList<>(),attack2=new ArrayList<>();
     private Defend defend1,defend2;
     private HashMap<String,Attack> attackMap1,attackMap2;
     private HashMap<String,Defend> defendMap1,defendMap2;
-    public int getId() {return gameId;}
     private void end() {
     	GamesManager.end(this);
     }
@@ -56,13 +54,13 @@ public class Game {
 				if(player.equals(player1))isBounce1=true;
 				else if(player.equals(player2))isBounce2=true;
 			}
-		};
+		}
 		if(jsonObject.containsKey("defend")){
 			JSONObject defend=jsonObject.getJSONObject("defend");
 			if(defend.containsKey("action")){
 				playerDefend(player,defend.getString("action"));
 			}
-		};
+		}
 		if(jsonObject.containsKey("attack")){
 			JSONObject attack=jsonObject.getJSONObject("attack");
 			if(attack.containsKey("action")){
@@ -70,12 +68,12 @@ public class Game {
 			}
 		}
     }
-	public void newPlayer(Player player) {
-		if(player1==null) {
+	void newPlayer(Player player) {
+		if(player1.getClapper()==null) {
 			player1.setClapper(new UnemployedMan(6,player.getName()));
 			player1.setGame(this);
 		}
-		else if(player2==null) {
+		else if(player2.getClapper()==null) {
 			player2.setClapper(new UnemployedMan(6,player.getName()));
 			player2.setGame(this);
 		}
@@ -102,16 +100,16 @@ public class Game {
      * 攻击防御名称表
      */
     private void buildHashMaps() {
-    	attackMap1=new HashMap<String, Attack>();
+    	attackMap1= new HashMap<>();
     	for(Attack atk:player1.getClapper().getAttackList()) attackMap1.put(atk.name,atk);
-    	attackMap2=new HashMap<String, Attack>();
+    	attackMap2= new HashMap<>();
     	for(Attack atk:player2.getClapper().getAttackList()) attackMap2.put(atk.name,atk);
-    	defendMap1=new HashMap<String, Defend>();
+    	defendMap1= new HashMap<>();
     	for(Defend dfd:player1.getClapper().getDefendList()) defendMap1.put(dfd.name,dfd);
-    	defendMap2=new HashMap<String, Defend>();
+    	defendMap2= new HashMap<>();
     	for(Defend dfd:player2.getClapper().getDefendList()) defendMap2.put(dfd.name,dfd);
     }
-    public void start() {
+    void start() {
     	Thread gameThread=new Thread(){
     		public void run() {
 	    		try {
@@ -159,10 +157,8 @@ public class Game {
 									",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"]");
 							//输入
 							broadcast("CLAP INPUT START");
-							isDoingInput=true;
 							Thread.sleep(3000);
 							broadcast("CLAP INPUT END");
-							isDoingInput=false;
 							//自动出饼
 							if((!isBounce1)&&defend1==null&&attack1.isEmpty())defend1=defendMap1.get("饼");
 							if((!isBounce2)&&defend2==null&&attack2.isEmpty())defend2=defendMap2.get("饼");

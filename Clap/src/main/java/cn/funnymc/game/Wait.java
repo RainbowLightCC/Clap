@@ -6,42 +6,45 @@ import java.util.List;
 /**
  * Waiting Room For Basic Clapping Game
  */
-public class Wait{
-    private int maxPlayersNum,playersNum;
+class Wait{
+    private int maxPlayersNum;
     private List<Player> players;
-    public Wait(){
-        this.playersNum = 0;
-        this.maxPlayersNum = 2;
+    Wait(int maxPlayersNum){
+        this.maxPlayersNum = maxPlayersNum;
         this.players=new ArrayList<>();
     }
-    
-    public void reset(){
-        this.playersNum = 0;
-        this.maxPlayersNum = 2;
+    private void reset(){
         this.players.clear();
     }
-    /**
-     * Need to check isFull() before calling it
-     * @param newPlayer
-     */
-    public void addPlayer(Player newPlayer){
+    private void broadcast(String msg){
+        for(Player p:players){
+            p.sendMessage(msg);
+        }
+    }
+    
+    void addPlayer(Player newPlayer){
         players.add(newPlayer);
-        playersNum++;
-        newPlayer.sendMessage("INFO WAIT "+playersNum+" of "+maxPlayersNum);
+        broadcast("INFO WAIT "+players.size()+" of "+maxPlayersNum);
+        if(players.size()==maxPlayersNum){
+            if(maxPlayersNum==2)this.toGame().start();
+            else this.toMultiplayerGame().start();
+            reset();
+        }
     }
 
-    public boolean isFull(){
-        return playersNum==maxPlayersNum;
-    }
-
-    public void leavePlayer(Player leavingPlayer){
-        int numBefore=players.size();
+    void leavePlayer(Player leavingPlayer){
         players.remove(leavingPlayer);
-        if(players.size()==numBefore-1)playersNum--;
     }
 
-    public Game toGame(){
+    private Game toGame(){
         Game game=new Game();
+        for(Player p:players){
+            game.newPlayer(p);
+        }
+        return game;
+    }
+    private MultiplayerGame toMultiplayerGame(){
+        MultiplayerGame game=new MultiplayerGame();
         for(Player p:players){
             game.newPlayer(p);
         }
