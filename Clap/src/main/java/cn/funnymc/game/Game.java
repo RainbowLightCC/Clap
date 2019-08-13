@@ -116,7 +116,7 @@ public class Game {
 	    			isGameRunning=true;
 	    			isGameCompleted=false;
 	    			buildHashMaps();
-					broadcast("CLAP START "+player1.getName()+","+player2.getName());
+					broadcast("CLAP START [\""+player1.getName()+"\",\""+player2.getName()+"\"]");
 					//游戏本体
 					player1.getClapper().init();
 					player2.getClapper().init();
@@ -126,8 +126,8 @@ public class Game {
 							break;
 						}
 						//报血量
-						broadcast("CLAP HEALTH [\""+player1.getName()+"\":"+player1.getClapper().getHealth()+
-								",\""+player2.getName()+"\":"+player2.getClapper().getHealth()+"]");
+						broadcast("CLAP HEALTH {\""+player1.getName()+"\":"+player1.getClapper().getHealth()+
+								",\""+player2.getName()+"\":"+player2.getClapper().getHealth()+"}");
 						if(player1.getClapper().checkAfterRound()&&player2.getClapper().checkAfterRound()) {
 							broadcast("CLAP END TIE");
 							break;
@@ -153,8 +153,8 @@ public class Game {
 							defend1=null;defend2=null;
 							isBounce1=false;isBounce2=false;
 							//广播饼数
-							broadcast("CLAP BISCUIT [\""+player1.getName()+"\":"+player1.getClapper().getBiscuits()+
-									",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"]");
+							broadcast("CLAP BISCUIT {\""+player1.getName()+"\":"+player1.getClapper().getBiscuits()+
+									",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"}");
 							//输入
 							broadcast("CLAP INPUT START");
 							Thread.sleep(3000);

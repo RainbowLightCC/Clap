@@ -3,10 +3,11 @@ package cn.funnymc.game;
 import cn.funnymc.actions.Attack;
 import cn.funnymc.actions.Bounce;
 import cn.funnymc.actions.Defend;
-import cn.funnymc.occupations.UnemployedMan;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.deploy.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,42 +15,25 @@ import java.util.List;
  * A Traditional Multiplayer Clapping Game
  */
 public class MultiplayerGame {
-    private Player[] players;
-    private int playersCount;
+    private HashMap<String, Player> players=new HashMap<>();
     private boolean isGameRunning=false;
     private boolean isGameCompleted=false;
-    private boolean[] isBounce;
-    private List<Attack>[] attacks;
-    private Defend[] defends;
-    private HashMap<String,Attack>[] attackMaps;
-    private HashMap<String,Defend>[] defendMaps;
-    
-    public MultiplayerGame(int playersCount){
-        this.playersCount=playersCount;
-        this.players=new Player[playersCount];
-        this.isBounce=new boolean[playersCount];
-        this.attacks=new List[playersCount];
-        this.defends=new Defend[playersCount];
-        this.attackMaps=new HashMap[playersCount];
-        this.defendMaps=new HashMap[playersCount];
-    }
+    private HashMap<String, Boolean> isBounce=new HashMap<>();
+    private HashMap<String, List<Attack>> attacks=new HashMap<>();
+    private HashMap<String, Defend> defends=new HashMap<>();
+    private HashMap<String, HashMap<String, Attack>> attackMaps=new HashMap<>();
+    private HashMap<String, HashMap<String, Defend>> defendMaps=new HashMap<>();
     
     private void end() {
         GamesManager.end(this);
     }
+    
+    //盯着看十秒，看懂了吗？
     private void playerAttack(Player player, String input) {
-        if(player.equals(player1)){
-            attack1.add(attackMap1.get(input));
-        }else if(player.equals(player2)) {
-            attack2.add(attackMap2.get(input));
-        }
+        attacks.get(player.getName()).add(attackMaps.get(player.getName()).get(input));
     }
     private void playerDefend(Player player, String input) {
-        if(player.equals(player1)){
-            defend1=defendMap1.get(input);
-        }else if(player.equals(player2)) {
-            defend2=defendMap2.get(input);
-        }
+        defends.put(player.getName(),defendMaps.get(player.getName()).get(input));
     }
 
     /**
@@ -62,8 +46,7 @@ public class MultiplayerGame {
         if(jsonObject.containsKey("special")){
             JSONObject special=jsonObject.getJSONObject("special");
             if(special.containsKey("action")&&special.get("action").equals("bounce")){
-                if(player.equals(player1))isBounce1=true;
-                else if(player.equals(player2))isBounce2=true;
+                isBounce.put(player.getName(),true);
             }
         };
         if(jsonObject.containsKey("defend")){
@@ -79,19 +62,16 @@ public class MultiplayerGame {
             }
         }
     }
-    public void newPlayer(Player player) {
-        if(player1==null) {
-            player1.setClapper(new UnemployedMan(6,player.getName()));
-            player1.setGame(this);
-        }
-        else if(player2==null) {
-            player2.setClapper(new UnemployedMan(6,player.getName()));
-            player2.setGame(this);
-        }
+    void newPlayer(Player player) {
+        players.put(player.getName(),player);
+        isBounce.put(player.getName(),false);
+        attacks.put(player.getName(),new ArrayList<Attack>());
+        defends.put(player.getName(),null);
     }
     private void broadcast(String msg) {
-        if(!player1.isOffline())player1.sendMessage(msg);
-        if(!player2.isOffline())player2.sendMessage(msg);
+        for(Player p: players.values()){
+            p.sendMessage(msg);
+        }
     }
     /**
      * 五六七走
@@ -111,94 +91,75 @@ public class MultiplayerGame {
      * 攻击防御名称表
      */
     private void buildHashMaps() {
-        attackMap1=new HashMap<String, Attack>();
-        for(Attack atk:player1.getClapper().getAttackList()) attackMap1.put(atk.name,atk);
-        attackMap2=new HashMap<String, Attack>();
-        for(Attack atk:player2.getClapper().getAttackList()) attackMap2.put(atk.name,atk);
-        defendMap1=new HashMap<String, Defend>();
-        for(Defend dfd:player1.getClapper().getDefendList()) defendMap1.put(dfd.name,dfd);
-        defendMap2=new HashMap<String, Defend>();
-        for(Defend dfd:player2.getClapper().getDefendList()) defendMap2.put(dfd.name,dfd);
+        for(String playerName:players.keySet()) {
+            Player player=players.get(playerName);
+            HashMap<String,Attack> attackMap=new HashMap<>();
+            for (Attack atk : player.getClapper().getAttackList()) attackMap.put(atk.name, atk);
+            attackMaps.put(playerName,attackMap);
+            HashMap<String,Defend> defendMap=new HashMap<>();
+            for (Defend dfd : player.getClapper().getDefendList()) defendMap.put(dfd.name, dfd);
+            defendMaps.put(playerName,defendMap);
+        }
     }
-    public void start() {
+    void start() {
         Thread gameThread=new Thread(){
             public void run() {
                 try {
                     isGameRunning=true;
                     isGameCompleted=false;
                     buildHashMaps();
-                    broadcast("CLAP START "+player1.getName()+","+player2.getName());
+                    broadcast("CLAP START [\""+StringUtils.join(players.keySet(),"\",\"")+"\"]");
                     //游戏本体
-                    player1.getClapper().init();
-                    player2.getClapper().init();
+                    players.forEach((k,v)->v.getClapper().init());
                     while(true) {//回合
                         //结束游戏 吗
                         if(!isGameRunning) {
                             break;
                         }
                         //报血量
-                        broadcast("CLAP HEALTH [\""+player1.getName()+"\":"+player1.getClapper().getHealth()+
-                                ",\""+player2.getName()+"\":"+player2.getClapper().getHealth()+"]");
-                        if(player1.getClapper().checkAfterRound()&&player2.getClapper().checkAfterRound()) {
-                            broadcast("CLAP END TIE");
-                            break;
+                        List<String> tempHealthString=new ArrayList<>();
+                        for(Player p:players.values()){
+                            tempHealthString.add("\""+p.getName()+"\":"+p.getClapper().getHealth());
                         }
-                        else if(player1.getClapper().checkAfterRound()) {
-                            broadcast("CLAP END "+player2.getName());
-                            break;
-                        }
-                        else if(player2.getClapper().checkAfterRound()) {
-                            broadcast("CLAP END "+player1.getName());
-                            break;
-                        }
+                        broadcast("CLAP HEALTH {"+StringUtils.join(tempHealthString,",")+"}");
+                        //FIXME: 这样写,死掉的人无法旁观
+                        players.entrySet().removeIf(p -> p.getValue().getClapper().checkAfterRound());
                         clap567();//五六七走
                         while(true) {//拍
                             boolean endRound=false;
                             //清空输入
-							/*
-							 远古代码改进
-							 (OK) Phase 1:改进Attack写法
-							 TODO Phase 2:更好地管理Defend(I类招式)和Attack(II类招式) 
-							 */
-                            attack1.clear();attack2.clear();
-                            defend1=null;defend2=null;
-                            isBounce1=false;isBounce2=false;
+                            attacks.forEach((k,v)->v.clear());
+                            defends.clear();
+                            isBounce.clear();
                             //广播饼数
-                            broadcast("CLAP BISCUIT [\""+player1.getName()+"\":"+player1.getClapper().getBiscuits()+
-                                    ",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"]");
+                            List<String> tempBiscuitString=new ArrayList<>();
+                            for(Player p:players.values()){
+                                tempBiscuitString.add("\""+p.getName()+"\":"+p.getClapper().getBiscuits());
+                            }
+                            broadcast("CLAP HEALTH {"+StringUtils.join(tempBiscuitString,",")+"}");
                             //输入
                             broadcast("CLAP INPUT START");
                             Thread.sleep(3000);
                             broadcast("CLAP INPUT END");
                             //自动出饼
-                            if((!isBounce1)&&defend1==null&&attack1.isEmpty())defend1=defendMap1.get("饼");
-                            if((!isBounce2)&&defend2==null&&attack2.isEmpty())defend2=defendMap2.get("饼");
+                            players.keySet().stream()
+                                    .filter(s -> !isBounce.get(s))
+                                    .filter(s -> defends.get(s)==null)
+                                    .filter(s -> attacks.get(s).isEmpty())
+                                    .forEach(s -> defends.put(s,defendMaps.get(s).get("饼")));
                             //广播输入结果
-                            if(isBounce1) {
-                                new Bounce(player1.getClapper()).onExecuted();
-                                broadcast("CLAP ACTION {\"special\":{\"action\":\"bounce\"}," +
-                                        "\"sender\":\""+player1.getName()+"\"}");
-                            }
-                            else if(defend1!=null){
-                                broadcast("CLAP ACTION {\"defend\":{\"action\":\""
-                                        +defend1.name+"\"},\"sender\":\""+player1.getName()+"\"}");
-                            }
-                            else {
-                                broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack1)
-                                        +",\"sender\":\""+player1.getName()+"\"}");
-                            }
-                            if(isBounce2) {
-                                new Bounce(player2.getClapper()).onExecuted();
-                                broadcast("CLAP ACTION {\"special\":{\"action\":\"bounce\"}," +
-                                        "\"sender\":\""+player2.getName()+"\"}");
-                            }
-                            else if(defend2!=null){
-                                broadcast("CLAP ACTION {\"defend\":{\"action\":\""
-                                        +defend2.name+"\"},\"sender\":\""+player2.getName()+"\"}");
-                            }
-                            else {
-                                broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack2)
-                                        +",\"sender\":\""+player2.getName()+"\"}");
+                            for(String s:players.keySet()){
+                                if(isBounce.get(s)){
+                                    new Bounce(players.get(s).getClapper()).onExecuted();
+                                    broadcast("CLAP ACTION {\"special\":{\"action\":\"bounce\"}," +
+                                            "\"sender\":\""+s+"\"}");
+                                }else if(defends.get(s)!=null){
+                                    broadcast("CLAP ACTION {\"defend\":{\"action\":\""
+                                            +defends.get(s).name+"\"},\"sender\":\""+s+"\"}");
+                                }else{
+                                    broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attacks.get(s))
+                                            +",\"sender\":\""+s+"\"}");
+                                }
                             }
                             //判断爆点
                             if((defend1!=null&&player1.getClapper().checkAfterInput(defend1))||
@@ -212,7 +173,7 @@ public class MultiplayerGame {
                                 endRound=true;
                             }
                             if(endRound)break;
-                            //判断弹 TODO: Think of a better way to process Bounce
+                            //判断弹
                             if(isBounce1&&isBounce2)continue;
                             if(isBounce1&&defend2==null) {
                                 for(Attack i:attack2) {
@@ -253,21 +214,6 @@ public class MultiplayerGame {
                     broadcast("CLAP END END");
                     isGameCompleted=true;
                 } catch (Exception e) {
-                    //消费过世玩家
-                    if(player1.isOffline()&&player2.isOffline()) {
-                        isGameCompleted=true;
-                        isGameRunning=false;
-                    }
-                    else if(player1.isOffline()) {
-                        isGameCompleted=true;
-                        isGameRunning=false;
-                        player2.sendMessage("CLAP END "+player2.getName());
-                    }
-                    else if(player2.isOffline()) {
-                        isGameCompleted=true;
-                        isGameRunning=false;
-                        player1.sendMessage("CLAP END "+player1.getName());
-                    }
                     if(!isGameCompleted) {
                         e.printStackTrace();
                         broadcast("CLAP BUG "+e.getMessage());
@@ -280,8 +226,7 @@ public class MultiplayerGame {
                     //五秒后关闭拍手
                     try {
                         Thread.sleep(5000);
-                        player1.setGame(null);
-                        player2.setGame(null);
+                        players.forEach((k,v)->v.setGame(null));
                         end();
                     } catch (InterruptedException e) {end();}
                 }

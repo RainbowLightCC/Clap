@@ -66,13 +66,15 @@ public class Clap extends WebSocketServer {
 	 * 
 	 * CLAP <Type> <Message>
 	 * -- 567 <五|六|七|走>
-	 * -- HEALTH <JSON LIST>(["name":health,...])
+	 * -- HEALTH <JSON>({"name":health,...})
 	 * -- ACTION <ACTION>(Json)
-	 * -- START <PLAYER LIST>(split by , )
-	 * -- END <TIE|END|BUG|WINNER>
-	 * -- BISCUIT <JSON LIST>(["name":biscuit,...])
+	 * -- START <PLAYER LIST>(Json List)
+	 * -- END <TIE|END|BUG|%WINNER%>
+	 * -- BISCUIT <JSON>({"name":biscuit,...})
 	 * -- INPUT <START|END>
 	 * -- BUG <MESSAGE>
+	 * -- DIE <PLAYER NAME>
+	 * -- LEAVE <PLAYER NAME>
 	 * -- BURST <PLAYER NAME>
 	 */
 	@Override
