@@ -58,7 +58,8 @@ public class Clap extends WebSocketServer {
 	 * SAY <Text>
 	 * PLAY <Setup>(Json)
 	 * CLAP <Action>(Json)
-	 *
+	 * LEAVE <WAIT|GAME>
+     * 
 	 * Server -> Client
 	 * CHAT <Username> <Message>
 	 * INFO <Type> <Message>
@@ -79,7 +80,7 @@ public class Clap extends WebSocketServer {
 	 */
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
-		Player player=(Player) conn;
+		Player player=(Player)conn.getAttachment();
 		System.out.println( player.getName() + ": " + message );
 		String[] splitedMessage=message.split(" ",2);
 		String cmd=splitedMessage[0],text=splitedMessage[1];
@@ -88,14 +89,19 @@ public class Clap extends WebSocketServer {
 				broadcast("CHAT "+player.getName()+" "+text);
 				break;
 			case "CLAP":
-				/*
-				 * (OK): [19.8.04] Send the Json command to Game.java
-				 */
-				player.getGame().playerJSONInput(player,text);
+				if(player.getGame()!=null)
+				    player.getGame().playerJSONInput(player,text);
 				break;
 			case "PLAY":
 				GamesManager.join(player,text);
 				break;
+            case "LEAVE":
+                if(text.equals("WAIT")){
+                    GamesManager.leave(player);
+                }else if(text.equals("GAME")){
+                    
+                }
+                break;
 		}
 	}
 
