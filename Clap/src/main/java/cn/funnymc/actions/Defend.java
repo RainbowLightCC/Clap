@@ -14,4 +14,5 @@ public class Defend {
 		this.name=name;
 		this.useB=useB;
 	}
+	public final static Defend empty=new Defend(false,false,false,false,false,"空",0);
 }

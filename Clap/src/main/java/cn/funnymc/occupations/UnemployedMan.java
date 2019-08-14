@@ -47,13 +47,13 @@ public class UnemployedMan {
 	  ====================*/
 	//Attack 攻击
 	private Attack
-		sa=new Attack("sa","Physics","Physics",this.name,1,1,3),
-		tin=new Attack("tin","Physics","Physics",this.name,1,3,1),
-		arrows=new Attack("万箭","Physics","Magic",this.name,2,2,2),
-		wildForce=new Attack("南蛮","Wild","Magic",this.name,3,3,3),
-		lightning=new Attack("闪电","Lightning","Magic",this.name,4,4,4),
-		fire=new Attack("火舞","Fire","Magic",this.name,5,5,5),
-		explosion=new Attack("核爆","Explosion","Magic",this.name,6,6,6);
+		sa=new Attack("sa","Physics","Physics", null, this.name,1,1,3),
+		tin=new Attack("tin","Physics","Physics", null, this.name,1,3,1),
+		arrows=new Attack("万箭","Physics","Magic", null, this.name,2,2,2),
+		wildForce=new Attack("南蛮","Wild","Magic", null, this.name,3,3,3),
+		lightning=new Attack("闪电","Lightning","Magic", null, this.name,4,4,4),
+		fire=new Attack("火舞","Fire","Magic", null, this.name,5,5,5),
+		explosion=new Attack("核爆","Explosion","Magic", null, this.name,6,6,6);
 	
 	//Defend 防御
 	private Defend

@@ -10,6 +10,8 @@ import com.sun.deploy.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A Traditional Multiplayer Clapping Game
@@ -29,8 +31,8 @@ public class MultiplayerGame {
     }
     
     //盯着看十秒，看懂了吗？
-    private void playerAttack(Player player, String input) {
-        attacks.get(player.getName()).add(attackMaps.get(player.getName()).get(input));
+    private void playerAttack(Player player, String input,String to) {
+        attacks.get(player.getName()).add(attackMaps.get(player.getName()).get(input).setTo(to));
     }
     private void playerDefend(Player player, String input) {
         defends.put(player.getName(),defendMaps.get(player.getName()).get(input));
@@ -58,7 +60,7 @@ public class MultiplayerGame {
         if(jsonObject.containsKey("attack")){
             JSONObject attack=jsonObject.getJSONObject("attack");
             if(attack.containsKey("action")){
-                playerAttack(player,attack.getString("action"));
+                playerAttack(player,attack.getString("action"),attack.getString("to"));
             }
         }
     }
@@ -162,50 +164,41 @@ public class MultiplayerGame {
                                 }
                             }
                             //判断爆点
-                            if((defend1!=null&&player1.getClapper().checkAfterInput(defend1))||
-                                    (defend1==null&&player1.getClapper().checkAfterInput(attack1))) {
-                                broadcast("CLAP BURST "+player1.getName());
-                                endRound=true;
-                            }
-                            if((defend2!=null&&player2.getClapper().checkAfterInput(defend2))||
-                                    (defend2==null&&player2.getClapper().checkAfterInput(attack2))) {
-                                broadcast("CLAP BURST "+player2.getName());
-                                endRound=true;
+                            for(String s:players.keySet()){
+                                if((defends.get(s)!=null&&players.get(s).getClapper().checkAfterInput(defends.get(s)))||
+                                    (defends.get(s)==null&&players.get(s).getClapper().checkAfterInput(attacks.get(s)))){
+                                    broadcast("CLAP BURST "+players.get(s).getName());
+                                    endRound=true;
+                                }
                             }
                             if(endRound)break;
                             //判断弹
-                            if(isBounce1&&isBounce2)continue;
-                            if(isBounce1&&defend2==null) {
-                                for(Attack i:attack2) {
-                                    if(!i.attribute.equals("Explosion"))
-                                        attack1.add(i);
+                            for (Map.Entry<String, Player> entry : players.entrySet()) {
+                                String s1 = entry.getKey();
+                                Player player1 = entry.getValue();
+                                for (Map.Entry<String, Player> e2 : players.entrySet()) {
+                                    String s2 = e2.getKey();
+                                    Player player2 = e2.getValue();
+                                    if(player1.equals(player2))continue;
+                                    boolean isBounce1 = isBounce.get(s1), isBounce2 = isBounce.get(s2);
+                                    Defend defend1 = defends.get(s1), defend2 = defends.get(2);
+                                    List<Attack> attack1 = attacks.get(s1), attack2 = attacks.get(s2);
+                                    if (isBounce1 && (!isBounce2) && defend2 == null) {
+                                        //1出弹，2出攻击 --> 2被弹了
+                                        player2.getClapper().onDefend(Defend.empty, attack2.stream().
+                                                filter(a -> !a.attribute.equals("Explosion"))
+                                                .filter(a -> a.getTo().equals(player2.getName()))
+                                                .collect(Collectors.toList()));
+                                    } else if ((!isBounce1) && defend1 != null && defend2 != null) {
+                                        //1出攻击，2出防御 --> 2被打了
+                                        player2.getClapper().onDefend(defend2, attack1.stream()
+                                                .filter(a -> a.getTo().equals(player2.getName()))
+                                                .collect(Collectors.toList()));
+                                    } else if ((!isBounce1) && defend1 != null && (!isBounce2) && defend2 != null) {
+                                        //都攻击
+                                        endRound = player2.getClapper().onCounteract(attack2, attack1) || endRound;
+                                    }
                                 }
-                                attack2.clear();
-                                defend2=new Defend(false,false,false,false,false,"空",0);
-                            }
-                            else if(isBounce2&&defend1==null) {
-                                for(Attack i:attack1) {
-                                    if(!i.attribute.equals("Explosion"))
-                                        attack2.add(i);
-                                }
-                                attack1.clear();
-                                defend1=new Defend(false,false,false,false,false,"空",0);
-                            }
-                            //抵消
-                            if(defend1!=null&&defend2!=null) {
-                                //都防御
-                                //什么也不做
-                            }
-                            else if(defend1==null&&defend2!=null) {
-                                //1攻击 2防御
-                                endRound=player2.getClapper().onDefend(defend2,attack1);
-                            }else if(defend2==null&&defend1!=null) {
-                                //2攻击 1防御
-                                endRound=player1.getClapper().onDefend(defend1,attack2);
-                            }else if(defend1==null&&defend2==null) {
-                                //都攻击
-                                endRound=player1.getClapper().onCounteract(attack1,attack2);
-                                endRound=player2.getClapper().onCounteract(attack2,attack1)||endRound;
                             }
                             //切回合
                             if(endRound)break;

@@ -26,11 +26,11 @@ public class Game {
     private void end() {
     	GamesManager.end(this);
     }
-	private void playerAttack(Player player, String input) {
+	private void playerAttack(Player player, String input, String to) {
 		if(player.equals(player1)){
-			attack1.add(attackMap1.get(input));
+			attack1.add(attackMap1.get(input).setTo(to));
 		}else if(player.equals(player2)) {
-			attack2.add(attackMap2.get(input));
+			attack2.add(attackMap2.get(input).setTo(to));
 		}
 	}
 	private void playerDefend(Player player, String input) {
@@ -64,7 +64,7 @@ public class Game {
 		if(jsonObject.containsKey("attack")){
 			JSONObject attack=jsonObject.getJSONObject("attack");
 			if(attack.containsKey("action")){
-				playerAttack(player,attack.getString("action"));
+				playerAttack(player,attack.getString("action"),attack.getString("to"));
 			}
 		}
     }
