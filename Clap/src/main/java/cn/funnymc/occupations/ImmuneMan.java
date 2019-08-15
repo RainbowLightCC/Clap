@@ -9,8 +9,8 @@ import java.util.Set;
  */
 public abstract class ImmuneMan extends UnemployedMan{
     private Set<String> immuneSet;
-    public ImmuneMan(int health, String name){
-        super(health, name);
+    public ImmuneMan(String name){
+        super(name);
     }
     
     @Override
@@ -19,7 +19,7 @@ public abstract class ImmuneMan extends UnemployedMan{
         this.health-=attack.harm;
         return true;
     }
-        
+    
     protected void setImmuneSet(Set<String> immuneSet) {
         this.immuneSet = immuneSet;
     }

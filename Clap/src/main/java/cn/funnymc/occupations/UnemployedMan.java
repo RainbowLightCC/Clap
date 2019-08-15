@@ -10,7 +10,7 @@ import java.util.List;
  * @author 滑稽神
  */
 public class UnemployedMan {
-	private int health,biscuits=0;
+	protected int health,biscuits=0;
 	protected String name="";
 	/**
 	 * 获得生命值
@@ -32,14 +32,13 @@ public class UnemployedMan {
 	 * 获得职业名
 	 * @return 职业名
 	 */
-	public String getOccupationName() {return "原版人";}
+	public String getOccupationName() {return "失业人";}
 	/**
 	 * 生成一个BasicMan(原版人)
-	 * @param health - 生命值
 	 * @param name - 玩家名
 	 */
-	public UnemployedMan(int health, String name) {
-		this.health=health;
+	public UnemployedMan(String name) {
+		this.health=6;
 		this.name=name;
 	}
 	/*====================

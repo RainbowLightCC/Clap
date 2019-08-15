@@ -7,12 +7,15 @@ import java.util.Set;
 
 public class WildKing extends ImmuneMan{
 
-    public WildKing(int health, String name) {
-        super(health, name);
+    public WildKing(String name) {
+        super(name);
         Set<String> immuneSet=new HashSet<>();
         immuneSet.add("Wild");
         super.setImmuneSet(immuneSet);
     }
+    
+    @Override
+    public String getOccupationName() {return "蛮王";}
     
     @Override
     public Attack[] getAttackList() {

@@ -7,12 +7,15 @@ import java.util.Set;
 
 public class PetroleumMan extends ImmuneMan{
 
-    public PetroleumMan(int health, String name) {
-        super(health, name);
+    public PetroleumMan(String name) {
+        super(name);
         Set<String> immuneSet=new HashSet<>();
         immuneSet.add("Physics");
         super.setImmuneSet(immuneSet);
     }
+    
+    @Override
+    public String getOccupationName() {return "石油人";}
     
     @Override
     protected boolean doHarm(Attack attack){
