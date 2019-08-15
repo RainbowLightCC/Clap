@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class UnemployedMan {
 	private int health,biscuits=0;
-	private String name="";
+	protected String name="";
 	/**
 	 * 获得生命值
 	 * @return 生命值
@@ -46,22 +46,22 @@ public class UnemployedMan {
 	    基础方法和游戏内方法的分割线
 	  ====================*/
 	//Attack 攻击
-	private Attack
+	protected Attack
 		sa=new Attack("sa","Physics","Physics", null, this.name,1,1,3),
 		tin=new Attack("tin","Physics","Physics", null, this.name,1,3,1),
-		arrows=new Attack("万箭","Physics","Magic", null, this.name,2,2,2),
+		arrows=new Attack("万箭","Arrows","Magic", null, this.name,2,2,2),
 		wildForce=new Attack("南蛮","Wild","Magic", null, this.name,3,3,3),
 		lightning=new Attack("闪电","Lightning","Magic", null, this.name,4,4,4),
 		fire=new Attack("火舞","Fire","Magic", null, this.name,5,5,5),
 		explosion=new Attack("核爆","Explosion","Magic", null, this.name,6,6,6);
 	
 	//Defend 防御
-	private Defend
-		biscuit=new Defend(false,false,false,false,true,"饼",-1),
-		defendPhysics=new Defend(true,false,false,false,false,"防",0),
-		defendWild=new Defend(false,true,false,false,false,"防南",0),
-		defendLightning=new Defend(false,false,true,false,false,"防闪",0),
-		defendFire=new Defend(false,false,false,true,false,"防火",0);
+	protected Defend
+		biscuit=new Defend(false,false,false,false,false,true,"饼",-1),
+		defendPhysics=new Defend(true,true,false,false,false,false,"防",0),
+		defendWild=new Defend(false,false,true,false,false,false,"防南",0),
+		defendLightning=new Defend(false,false,false,true,false,false,"防闪",0),
+		defendFire=new Defend(false,false,false,false,true,false,"防火",0);
 	
 	/**
 	 * 获得攻击列表
@@ -180,9 +180,8 @@ public class UnemployedMan {
 			}
 		}
 		if(othersPos<othersLength) {
-			endRound=true;
 			for(int i=othersPos;i<othersLength;i++) {
-				this.health-=others[othersPos].harm;
+				if(doHarm(others[othersPos]))endRound=true;
 			}
 		}
 		return endRound;
@@ -197,16 +196,21 @@ public class UnemployedMan {
 		boolean endRound=false;
 		for(Attack i:others) {
 			if((i.attribute.equals("Physics")&&!mine.a_Physics)||
+				(i.attribute.equals("Arrows")&&!mine.a_Arrows)||
 				(i.attribute.equals("Wild")&&!mine.a_Wild)||
 				(i.attribute.equals("Lightning")&&!mine.a_Lightning)||
 				(i.attribute.equals("Fire")&&!mine.a_Fire)||
 				(i.attribute.equals("Explosion")&&!mine.a_Explosion)
 					) {
-				endRound=true;
-				this.health-=i.harm;
+				if(doHarm(i)) endRound=true;
 			}
 		}
 		return endRound;
+	}
+	
+	protected boolean doHarm(Attack attack){
+		this.health-=attack.harm;
+		return true;
 	}
 	/**
 	 * 切回合后检查
