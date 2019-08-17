@@ -70,11 +70,11 @@ public class Game {
     }
 	void newPlayer(Player player) {
 		if(player1.getClapper()==null) {
-			player1.setClapper(new UnemployedMan(6,player.getName()));
+			player1.setClapper(new UnemployedMan(player.getName()));
 			player1.setGame(this);
 		}
 		else if(player2.getClapper()==null) {
-			player2.setClapper(new UnemployedMan(6,player.getName()));
+			player2.setClapper(new UnemployedMan(player.getName()));
 			player2.setGame(this);
 		}
 	}
@@ -209,7 +209,7 @@ public class Game {
 										attack1.add(i);
 								}
 								attack2.clear();
-								defend2=new Defend(false,false,false,false,false,"空",0);
+								defend2=new Defend(false,false,false,false,false,false,"空",0);
 							}
 							else if(isBounce2&&defend1==null) {
 								for(Attack i:attack1) {
@@ -217,7 +217,7 @@ public class Game {
 										attack2.add(i);
 								}
 								attack1.clear();
-								defend1=new Defend(false,false,false,false,false,"空",0);
+								defend1=new Defend(false,false,false,false,false,false,"空",0);
 							}
 							//抵消
 							if(defend1!=null&&defend2!=null) {
