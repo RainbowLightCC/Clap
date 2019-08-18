@@ -16,7 +16,9 @@ public class GamesManager {
     private static Set<Game> games= new HashSet<>();
     private static Set<MultiplayerGame> multiplayerGames=new HashSet<>();
     private static Wait wait=new Wait(2),
-        multiplayerWait=new Wait(8);
+        multiplayerWait=new Wait(8),
+        occupationWait=new Wait(2),
+        multiOccupationWait=new Wait(8);
     static void end(Game game) {
         games.remove(game);
     }
@@ -31,8 +33,13 @@ public class GamesManager {
             }else{
                 multiplayerWait.addPlayer(joiningPlayer);
             }
+        }else if(jsonObject.getString("type").equals("occupation")){
+            if(jsonObject.getInteger("players")==2){
+                occupationWait.addPlayer(joiningPlayer,jsonObject.getString("Occupation"));
+            }else{
+                multiplayerWait.addPlayer(joiningPlayer,jsonObject.getString("Occupation"));
+            }
         }
-        //else 职业
     }
     public static void leave(Player leavingPlayer){
         wait.leavePlayer(leavingPlayer);

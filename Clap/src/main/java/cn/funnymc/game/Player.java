@@ -7,6 +7,7 @@ public class Player {
     private WebSocket conn;
     private String name;
     private Game game;
+    private Wait wait;
     public Player(WebSocket conn, String name){
         this.conn = conn;
         this.name = name;
@@ -17,6 +18,7 @@ public class Player {
     public String getName(){
         return name;
     }
+    
     //TODO: Clapper
     private UnemployedMan clapper;
     public UnemployedMan getClapper(){
@@ -29,5 +31,13 @@ public class Player {
     public Game getGame(){return game;}
     public boolean isOffline(){
         return conn.isClosed();
+    }
+
+    public Wait getWait() {
+        return wait;
+    }
+
+    public void setWait(Wait wait) {
+        this.wait = wait;
     }
 }

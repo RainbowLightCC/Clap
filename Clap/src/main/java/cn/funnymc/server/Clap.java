@@ -59,11 +59,15 @@ public class Clap extends WebSocketServer {
 	 * PLAY <Setup>(Json)
 	 * CLAP <Action>(Json)
 	 * LEAVE <WAIT|GAME>
+     * FORCE <START|CANCEL>
      * 
 	 * Server -> Client
 	 * CHAT <Username> <Message>
 	 * INFO <Type> <Message>
 	 * -- WAIT <...>
+	 * -- JOIN <PLAYER : OCCUPATION>
+	 * -- LEAVE <PLAYER : OCCUPATION>
+	 * -- OCCUPATION ERROR/USED
 	 * 
 	 * CLAP <Type> <Message>
 	 * -- 567 <五|六|七|走>
@@ -102,6 +106,13 @@ public class Clap extends WebSocketServer {
                     
                 }
                 break;
+			case "FORCE":
+				if(text.equals("START")){
+					player.getWait().addForce(player);
+				}else if(text.equals("CANCEL")){
+					player.getWait().cancelForce(player);
+				}
+				break;
 		}
 	}
 
