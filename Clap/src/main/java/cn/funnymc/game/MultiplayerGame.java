@@ -82,7 +82,6 @@ public class MultiplayerGame {
      * @throws InterruptedException
      */
     private void clap567() throws InterruptedException {
-        Thread.sleep(500);
         broadcast("CLAP 567 五");
         Thread.sleep(500);
         broadcast("CLAP 567 六");
@@ -90,6 +89,7 @@ public class MultiplayerGame {
         broadcast("CLAP 567 七");
         Thread.sleep(500);
         broadcast("CLAP 567 走");
+        Thread.sleep(500);
     }
     /**
      * 攻击防御名称表

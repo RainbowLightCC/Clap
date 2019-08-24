@@ -69,11 +69,13 @@ public class Game {
 		}
     }
 	void newPlayer(Player player) {
-		if(player1.getClapper()==null) {
+		if(player1==null) {
+			player1=player;
 			player1.setClapper(new UnemployedMan(player.getName()));
 			player1.setGame(this);
 		}
-		else if(player2.getClapper()==null) {
+		else if(player2==null) {
+			player2=player;
 			player2.setClapper(new UnemployedMan(player.getName()));
 			player2.setGame(this);
 		}
@@ -87,7 +89,6 @@ public class Game {
      * @throws InterruptedException 
      */
     private void clap567() throws InterruptedException {
-    	Thread.sleep(500);
     	broadcast("CLAP 567 五");
     	Thread.sleep(500);
     	broadcast("CLAP 567 六");
@@ -95,6 +96,7 @@ public class Game {
     	broadcast("CLAP 567 七");
     	Thread.sleep(500);
     	broadcast("CLAP 567 走");
+		Thread.sleep(500);
     }
     /**
      * 攻击防御名称表
@@ -143,6 +145,16 @@ public class Game {
 						clap567();//五六七走
 						while(true) {//拍
 							boolean endRound=false;
+							if(player1.isOffline()){
+								player2.sendMessage("CLAP LEAVE "+player1.getName());
+								isGameRunning=false;
+								break;
+							}
+							if(player2.isOffline()){
+								player1.sendMessage("CLAP LEAVE "+player2.getName());
+								isGameRunning=false;
+								break;
+							}
 							//清空输入
 							/*
 							 远古代码改进
