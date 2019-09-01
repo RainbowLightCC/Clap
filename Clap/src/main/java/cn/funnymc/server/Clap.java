@@ -59,7 +59,8 @@ public class Clap extends WebSocketServer {
 	 * PLAY <Setup>(Json)
 	 * CLAP <Action>(Json)
 	 * LEAVE <WAIT|GAME>
-     * FORCE <START|CANCEL>
+     * FORCE <START|CANCEL>//multiplayer
+     * QUERY <2|8>
      * 
 	 * Server -> Client
 	 * CHAT <Username> <Message>
@@ -67,10 +68,10 @@ public class Clap extends WebSocketServer {
 	 * -- WAIT <...>
 	 * -- JOIN <PLAYER : OCCUPATION>
 	 * -- LEAVE <PLAYER : OCCUPATION>
-	 * -- OCCUPATION ERROR/USED
+	 * -- OCCUPATION ERROR/USED/%name%
 	 * 
 	 * CLAP <Type> <Message>
-	 * -- 567 <五|六|七|走>
+	 * -- 567 <五|六|七|走|START|END>
 	 * -- HEALTH <JSON>({"name":health,...})
 	 * -- ACTION <ACTION>(Json)
 	 * -- START <PLAYER LIST>(Json List)
@@ -112,6 +113,9 @@ public class Clap extends WebSocketServer {
 				}else if(text.equals("CANCEL")){
 					player.getWait().cancelForce(player);
 				}
+				break;
+			case "QUERY":
+				player.sendMessage("OCCUPATION "+GamesManager.getUsedOccupationFor2pGame());
 				break;
 		}
 	}

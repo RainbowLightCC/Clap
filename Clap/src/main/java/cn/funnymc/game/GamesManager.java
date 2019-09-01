@@ -37,12 +37,15 @@ public class GamesManager {
             if(jsonObject.getInteger("players")==2){
                 occupationWait.addPlayer(joiningPlayer,jsonObject.getString("Occupation"));
             }else{
-                multiplayerWait.addPlayer(joiningPlayer,jsonObject.getString("Occupation"));
+                multiOccupationWait.addPlayer(joiningPlayer,jsonObject.getString("Occupation"));
             }
         }
     }
     public static void leave(Player leavingPlayer){
         wait.leavePlayer(leavingPlayer);
         multiplayerWait.leavePlayer(leavingPlayer);
+    }
+    public static String getUsedOccupationFor2pGame(){
+        return occupationWait.getUsedOccupationFor2pGame();
     }
 }

@@ -6,6 +6,7 @@ import cn.funnymc.actions.Defend;
 import cn.funnymc.occupations.UnemployedMan;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +90,8 @@ public class Game {
      * @throws InterruptedException 
      */
     private void clap567() throws InterruptedException {
+        Thread.sleep(2000);
+        broadcast("CLAP 567 START");
     	broadcast("CLAP 567 五");
     	Thread.sleep(500);
     	broadcast("CLAP 567 六");
@@ -97,6 +100,7 @@ public class Game {
     	Thread.sleep(500);
     	broadcast("CLAP 567 走");
 		Thread.sleep(500);
+        broadcast("CLAP 567 END");
     }
     /**
      * 攻击防御名称表
@@ -185,7 +189,7 @@ public class Game {
                                         +defend1.name+"\"},\"sender\":\""+player1.getName()+"\"}");
                             }
 							else {
-								broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack1)
+								broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack1,SerializerFeature.DisableCircularReferenceDetect)
                                         +",\"sender\":\""+player1.getName()+"\"}");
 							}
                             if(isBounce2) {
@@ -198,7 +202,7 @@ public class Game {
                                         +defend2.name+"\"},\"sender\":\""+player2.getName()+"\"}");
                             }
                             else {
-                                broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack2)
+                                broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attack2,SerializerFeature.DisableCircularReferenceDetect)
                                         +",\"sender\":\""+player2.getName()+"\"}");
                             }
 							//判断爆点

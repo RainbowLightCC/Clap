@@ -122,7 +122,8 @@ public class UnemployedMan {
 	public boolean onCounteract(List<Attack> mineAttack,List<Attack> othersAttack) {
 		//吃屎了，要改这么多
 		//TODO 下面两行是急救措施 以后再改
-		Attack[] mine= (Attack[]) mineAttack.toArray(),others= (Attack[]) othersAttack.toArray();
+		Attack[] mine= new Attack[mineAttack.size()],others=new Attack[othersAttack.size()];
+		mineAttack.toArray(mine);othersAttack.toArray(others);
 		int mineLength=mineAttack.size(),othersLength=othersAttack.size();
 		int minePos=0,othersPos=0;
 		boolean endRound=false;

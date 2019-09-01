@@ -5,6 +5,7 @@ import cn.funnymc.actions.Bounce;
 import cn.funnymc.actions.Defend;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -82,6 +83,8 @@ public class MultiplayerGame {
      * @throws InterruptedException
      */
     private void clap567() throws InterruptedException {
+        Thread.sleep(2000);
+        broadcast("CLAP 567 START");
         broadcast("CLAP 567 五");
         Thread.sleep(500);
         broadcast("CLAP 567 六");
@@ -90,6 +93,7 @@ public class MultiplayerGame {
         Thread.sleep(500);
         broadcast("CLAP 567 走");
         Thread.sleep(500);
+        broadcast("CLAP 567 END");
     }
     /**
      * 攻击防御名称表
@@ -161,7 +165,7 @@ public class MultiplayerGame {
                                     broadcast("CLAP ACTION {\"defend\":{\"action\":\""
                                             +defends.get(s).name+"\"},\"sender\":\""+s+"\"}");
                                 }else{
-                                    broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attacks.get(s))
+                                    broadcast("CLAP ACTION {\"attack\":"+ JSON.toJSONString(attacks.get(s), SerializerFeature.DisableCircularReferenceDetect)
                                             +",\"sender\":\""+s+"\"}");
                                 }
                             }

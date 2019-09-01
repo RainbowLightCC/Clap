@@ -1,10 +1,13 @@
 package cn.funnymc.game;
 
 import cn.funnymc.occupations.UnemployedMan;
+import com.mysql.cj.x.protobuf.MysqlxNotice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
+
+import cn.funnymc.occupations.Occupations;
 
 /**
  * Waiting Room For Basic Clapping Game
@@ -12,6 +15,7 @@ import java.util.Set;
 public class Wait{
     private int maxPlayersNum;
     private Set<Player> players=new HashSet<>(),forcePlayer=new HashSet<>();
+    private String onePlayerOccupation_;
     Wait(int maxPlayersNum){
         this.maxPlayersNum = maxPlayersNum;
     }
@@ -28,7 +32,7 @@ public class Wait{
 
     /**
      * No occupation
-     * @param newPlayer ÐÂÍæ¼Ò
+     * @param newPlayer æ–°çŽ©å®¶
      */
     void addPlayer(Player newPlayer){
         newPlayer.setClapper(new UnemployedMan(newPlayer.getName()));
@@ -50,13 +54,14 @@ public class Wait{
     }
     /**
      * Occupations.
-     * @param newPlayer ÐÂÍæ¼Ò
-     * @param occupation Ö°ÒµÃû£¨ÀàÃû£©
+     * @param newPlayer æ–°çŽ©å®¶
+     * @param occupation èŒä¸šåï¼ˆç±»åï¼‰
      */
     void addPlayer(Player newPlayer,String occupation){
         try {
             newPlayer.setClapper((UnemployedMan)Class.forName("cn.funnymc."+occupation)
                     .getConstructor(String.class).newInstance(newPlayer.getName()));
+            if(players.size()==0)onePlayerOccupation_=newPlayer.getClapper().getOccupationName();
             players.forEach(p->newPlayer.sendMessage("INFO JOIN "+p.getName()+" : "+p.getClapper().getOccupationName()));
             players.add(newPlayer);
             broadcast("INFO WAIT "+players.size()+" of "+maxPlayersNum+"\n");
@@ -90,5 +95,9 @@ public class Wait{
             game.newPlayer(p);
         }
         return game;
+    }
+    
+    public String getUsedOccupationFor2pGame(){
+        return onePlayerOccupation_;
     }
 }
