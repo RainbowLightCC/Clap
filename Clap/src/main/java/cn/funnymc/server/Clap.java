@@ -9,6 +9,8 @@ import org.java_websocket.exceptions.InvalidDataException;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -17,6 +19,7 @@ import java.net.UnknownHostException;
  * Websocket Clap Server.
  */
 public class Clap extends WebSocketServer {
+	private static final Logger logger= LoggerFactory.getLogger(Clap.class);
 	public Clap(int port) throws UnknownHostException {
 		super(new InetSocketAddress(port));
 	}
@@ -43,24 +46,23 @@ public class Clap extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake){
 		Player player=(Player)conn.getAttachment();
-		System.out.println(player.getName()+" connected!");
+		logger.info(player.getName()+" connected!");
 	}
 	@Override
 	public void onClose(WebSocket conn,int code,String reason,boolean remote) {
 		Player player=(Player)conn.getAttachment();
 		GamesManager.leave(player);
-		System.out.println(player.getName()+" has left!");
+		logger.info(player.getName()+" has left!");
 	}
 
 	/**
-	 * IMPORTANT: Websocket Interaction Document
+	 * Websocket Interaction
 	 * Client -> Server
 	 * SAY <Text>
 	 * PLAY <Setup>(Json)
 	 * CLAP <Action>(Json)
 	 * LEAVE <WAIT|GAME>
      * FORCE <START|CANCEL>//multiplayer
-     * QUERY <2|8>
      * 
 	 * Server -> Client
 	 * CHAT <Username> <Message>
@@ -86,7 +88,7 @@ public class Clap extends WebSocketServer {
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
 		Player player=(Player)conn.getAttachment();
-		System.out.println( player.getName() + ": " + message );
+		logger.info(player.getName() + ": " + message );
 		String[] splitedMessage=message.split(" ",2);
 		String cmd=splitedMessage[0],text=splitedMessage[1];
 		switch (cmd) {
@@ -114,9 +116,6 @@ public class Clap extends WebSocketServer {
 					player.getWait().cancelForce(player);
 				}
 				break;
-			case "QUERY":
-				player.sendMessage("OCCUPATION "+GamesManager.getUsedOccupationFor2pGame());
-				break;
 		}
 	}
 
@@ -129,7 +128,7 @@ public class Clap extends WebSocketServer {
 	}
 	@Override
 	public void onStart() {
-		System.out.println("Server started on port: "+this.getPort());
+		logger.info("Server started on port: "+this.getPort());
 		setConnectionLostTimeout(0);
 		setConnectionLostTimeout(100);
 	}

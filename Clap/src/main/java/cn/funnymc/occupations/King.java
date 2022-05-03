@@ -1,10 +1,12 @@
 package cn.funnymc.occupations;
 
+import cn.funnymc.game.Player;
+
 public class King extends UnemployedMan{
 
-    public King(String name) {
-        super(name);
-        health=15;
+    public King(String name, Player player) {
+        super(name,player);
+        this.health=15;
     }
 
     @Override

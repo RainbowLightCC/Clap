@@ -1,6 +1,7 @@
 package cn.funnymc.occupations;
 
 import cn.funnymc.actions.Attack;
+import cn.funnymc.game.Player;
 
 import java.util.Set;
 
@@ -9,10 +10,10 @@ import java.util.Set;
  */
 public abstract class ImmuneMan extends UnemployedMan{
     private Set<String> immuneSet;
-    public ImmuneMan(String name){
-        super(name);
+    public ImmuneMan(String name, Player player){
+        super(name,player);
     }
-    
+
     @Override
     protected boolean doHarm(Attack attack){
         if(immuneSet.contains(attack.attribute))return false;

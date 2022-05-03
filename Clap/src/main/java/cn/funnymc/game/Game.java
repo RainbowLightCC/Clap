@@ -3,12 +3,12 @@ package cn.funnymc.game;
 import cn.funnymc.actions.Attack;
 import cn.funnymc.actions.Bounce;
 import cn.funnymc.actions.Defend;
-import cn.funnymc.occupations.UnemployedMan;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,6 +16,8 @@ import java.util.List;
  * A Traditional 1v1 Clapping Game
  */
 public class Game {
+	final int CLAP_TIME=2000;
+	
 	private Player player1, player2;
     private boolean isGameRunning=false;
 	private boolean isGameCompleted=false;
@@ -24,6 +26,9 @@ public class Game {
     private Defend defend1,defend2;
     private HashMap<String,Attack> attackMap1,attackMap2;
     private HashMap<String,Defend> defendMap1,defendMap2;
+	public List<Player> getPlayerList(){
+		return Arrays.asList(player1,player2);
+	}
     private void end() {
     	GamesManager.end(this);
     }
@@ -72,12 +77,12 @@ public class Game {
 	void newPlayer(Player player) {
 		if(player1==null) {
 			player1=player;
-			player1.setClapper(new UnemployedMan(player.getName()));
+//			player1.setClapper(new UnemployedMan(player.getName()));
 			player1.setGame(this);
 		}
 		else if(player2==null) {
 			player2=player;
-			player2.setClapper(new UnemployedMan(player.getName()));
+//			player2.setClapper(new UnemployedMan(player.getName()));
 			player2.setGame(this);
 		}
 	}
@@ -134,15 +139,15 @@ public class Game {
 						//报血量
 						broadcast("CLAP HEALTH {\""+player1.getName()+"\":"+player1.getClapper().getHealth()+
 								",\""+player2.getName()+"\":"+player2.getClapper().getHealth()+"}");
-						if(player1.getClapper().checkAfterRound()&&player2.getClapper().checkAfterRound()) {
+						if(player1.getClapper().dead()&&player2.getClapper().dead()) {
 							broadcast("CLAP END TIE");
 							break;
 						}
-						else if(player1.getClapper().checkAfterRound()) {
+						else if(player1.getClapper().dead()) {
 							broadcast("CLAP END "+player2.getName());
 							break;
 						}
-						else if(player2.getClapper().checkAfterRound()) {
+						else if(player2.getClapper().dead()) {
                             broadcast("CLAP END "+player1.getName());
 							break;
 						}
@@ -173,7 +178,7 @@ public class Game {
 									",\""+player2.getName()+"\":"+player2.getClapper().getBiscuits()+"}");
 							//输入
 							broadcast("CLAP INPUT START");
-							Thread.sleep(3000);
+							Thread.sleep(CLAP_TIME); //拍长
 							broadcast("CLAP INPUT END");
 							//自动出饼
 							if((!isBounce1)&&defend1==null&&attack1.isEmpty())defend1=defendMap1.get("饼");
@@ -236,24 +241,22 @@ public class Game {
 								defend1=new Defend(false,false,false,false,false,false,"空",0);
 							}
 							//抵消
-							if(defend1!=null&&defend2!=null) {
-								//都防御
-								//什么也不做
-							}
-							else if(defend1==null&&defend2!=null) {
+							if(defend1==null&&defend2!=null) {
 								//1攻击 2防御
 								endRound=player2.getClapper().onDefend(defend2,attack1);
 							}else if(defend2==null&&defend1!=null) {
 								//2攻击 1防御
 								endRound=player1.getClapper().onDefend(defend1,attack2);
-							}else if(defend1==null&&defend2==null) {
+							}else if(defend1==null&&defend2==null){
 								//都攻击
-								endRound=player1.getClapper().onCounteract(attack1,attack2);
-								endRound=player2.getClapper().onCounteract(attack2,attack1)||endRound;
+								endRound=player1.getClapper().onCounteract(attack1,attack2)
+									||player2.getClapper().onCounteract(attack2,attack1);
 							}
 							//切回合
 							if(endRound)break;
 						}
+						player1.getClapper().checkAfterRound();
+						player2.getClapper().checkAfterRound();
 					}
 					broadcast("CLAP END END");
 					isGameCompleted=true;

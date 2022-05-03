@@ -1,14 +1,15 @@
 package cn.funnymc.occupations;
 
 import cn.funnymc.actions.Attack;
+import cn.funnymc.game.Player;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class WildKing extends ImmuneMan{
 
-    public WildKing(String name) {
-        super(name);
+    public WildKing(String name, Player player) {
+        super(name,player);
         Set<String> immuneSet=new HashSet<>();
         immuneSet.add("Wild");
         super.setImmuneSet(immuneSet);

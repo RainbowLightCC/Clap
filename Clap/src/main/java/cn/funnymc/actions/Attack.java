@@ -41,6 +41,18 @@ public class Attack {
 		this.harm=harm;
 		this.defend=defend;
 	}
+	public Attack(Attack a) {
+		this.name=a.name;
+		this.attribute=a.attribute;
+		//Physics,Wild,Lightning,Fire,Explosion
+		this.type=a.type;
+		//Physics,Magic,Special
+		this.to = a.to;
+		this.sender=a.sender;
+		this.useB=a.useB;
+		this.harm=a.harm;
+		this.defend=a.defend;
+	}
 	public Attack setTo(String to) {
 		this.to = to;
 		return this;

@@ -1,7 +1,7 @@
 package cn.funnymc.actions;
 
 public class Defend {
-	//TODO: 设置private,getter,setter,javadoc
+	//TODO: 设置private,getter,setter
 	public boolean a_Physics,a_Wild,a_Lightning,a_Fire,a_Explosion,a_Arrows;
 	public String name;
 	public int useB;

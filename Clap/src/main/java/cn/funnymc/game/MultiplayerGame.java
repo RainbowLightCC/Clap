@@ -131,7 +131,7 @@ public class MultiplayerGame {
                         }
                         broadcast("CLAP HEALTH {"+StringUtils.join(tempHealthString,",")+"}");
                         //FIXME: 这样写,死掉的人无法旁观
-                        players.entrySet().removeIf(p -> p.getValue().getClapper().checkAfterRound());
+                        players.entrySet().removeIf(p -> p.getValue().getClapper().dead());
                         clap567();//五六七走
                         while(true) {//拍
                             boolean endRound=false;

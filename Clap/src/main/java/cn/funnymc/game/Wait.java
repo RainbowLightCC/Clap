@@ -1,13 +1,10 @@
 package cn.funnymc.game;
 
 import cn.funnymc.occupations.UnemployedMan;
-import com.mysql.cj.x.protobuf.MysqlxNotice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
-
-import cn.funnymc.occupations.Occupations;
 
 /**
  * Waiting Room For Basic Clapping Game
@@ -15,7 +12,6 @@ import cn.funnymc.occupations.Occupations;
 public class Wait{
     private int maxPlayersNum;
     private Set<Player> players=new HashSet<>(),forcePlayer=new HashSet<>();
-    private String onePlayerOccupation_;
     Wait(int maxPlayersNum){
         this.maxPlayersNum = maxPlayersNum;
     }
@@ -35,7 +31,7 @@ public class Wait{
      * @param newPlayer 新玩家
      */
     void addPlayer(Player newPlayer){
-        newPlayer.setClapper(new UnemployedMan(newPlayer.getName()));
+        newPlayer.setClapper(new UnemployedMan(newPlayer.getName(),newPlayer));
         players.forEach(p->newPlayer.sendMessage("INFO JOIN "+p.getName()+" : "+p.getClapper().getOccupationName()));
         players.add(newPlayer);
         broadcast("INFO WAIT "+players.size()+" of "+maxPlayersNum);
@@ -59,21 +55,18 @@ public class Wait{
      */
     void addPlayer(Player newPlayer,String occupation){
         try {
-            newPlayer.setClapper((UnemployedMan)Class.forName("cn.funnymc."+occupation)
-                    .getConstructor(String.class).newInstance(newPlayer.getName()));
-            if(players.size()==0)onePlayerOccupation_=newPlayer.getClapper().getOccupationName();
+            newPlayer.setClapper((UnemployedMan)Class.forName("cn.funnymc.occupations."+occupation)
+                    .getConstructor(String.class,Player.class).newInstance(newPlayer.getName(),newPlayer));
             players.forEach(p->newPlayer.sendMessage("INFO JOIN "+p.getName()+" : "+p.getClapper().getOccupationName()));
             players.add(newPlayer);
             broadcast("INFO WAIT "+players.size()+" of "+maxPlayersNum+"\n");
             broadcast("INFO JOIN "+newPlayer.getName()+" : "+newPlayer.getClapper().getOccupationName());
             newPlayer.setWait(this);
             if(players.size()==maxPlayersNum){
-                if(maxPlayersNum==2)this.toGame().start();
-                else this.toMultiplayerGame().start();
                 resetAndStart();
             }
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             newPlayer.sendMessage("INFO OCCUPATION ERROR");
         }
     }
@@ -92,12 +85,10 @@ public class Wait{
     private MultiplayerGame toMultiplayerGame(){
         MultiplayerGame game=new MultiplayerGame();
         for(Player p:players){
+            p.setWait(null);
             game.newPlayer(p);
         }
         return game;
     }
-    
-    public String getUsedOccupationFor2pGame(){
-        return onePlayerOccupation_;
-    }
+
 }

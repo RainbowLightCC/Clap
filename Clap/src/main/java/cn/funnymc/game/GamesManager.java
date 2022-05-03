@@ -43,9 +43,6 @@ public class GamesManager {
     }
     public static void leave(Player leavingPlayer){
         wait.leavePlayer(leavingPlayer);
-        multiplayerWait.leavePlayer(leavingPlayer);
-    }
-    public static String getUsedOccupationFor2pGame(){
-        return occupationWait.getUsedOccupationFor2pGame();
+        occupationWait.leavePlayer(leavingPlayer);
     }
 }

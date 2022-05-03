@@ -2,6 +2,7 @@ package cn.funnymc.occupations;
 
 import cn.funnymc.actions.Attack;
 import cn.funnymc.actions.Defend;
+import cn.funnymc.game.Player;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class UnemployedMan {
 	protected int health,biscuits=0;
 	protected String name="";
+	Player player;
 	/**
 	 * 获得生命值
 	 * @return 生命值
@@ -34,12 +36,13 @@ public class UnemployedMan {
 	 */
 	public String getOccupationName() {return "失业人";}
 	/**
-	 * 生成一个BasicMan(原版人)
+	 * 生成一个UnemployedMan
 	 * @param name - 玩家名
 	 */
-	public UnemployedMan(String name) {
+	public UnemployedMan(String name,Player player) {
 		this.health=6;
 		this.name=name;
+		this.player=player;
 	}
 	/*====================
 	    基础方法和游戏内方法的分割线
@@ -120,12 +123,16 @@ public class UnemployedMan {
 	 * @return 是否切回合
 	 */
 	public boolean onCounteract(List<Attack> mineAttack,List<Attack> othersAttack) {
-		//吃屎了，要改这么多
 		//TODO 下面两行是急救措施 以后再改
-		Attack[] mine= new Attack[mineAttack.size()],others=new Attack[othersAttack.size()];
-		mineAttack.toArray(mine);othersAttack.toArray(others);
 		int mineLength=mineAttack.size(),othersLength=othersAttack.size();
+		Attack[] mine= new Attack[mineLength],others=new Attack[othersLength];
 		int minePos=0,othersPos=0;
+		for(Attack a:mineAttack){
+			mine[minePos]=new Attack(a);++minePos;
+		}for(Attack a:othersAttack){
+			others[othersPos]=new Attack(a);++othersPos;
+		}
+		minePos=0;othersPos=0;
 		boolean endRound=false;
 		while(minePos<mineLength&&othersPos<othersLength) {
 			//相同则抵消
@@ -152,7 +159,7 @@ public class UnemployedMan {
 				continue;
 			}
 			if(mine[minePos].name.equals("tin")&&others[othersPos].name.equals("sa")) {
-				this.health--;
+				this.doHarm(sa);
 				endRound=true;
 				minePos++;othersPos++;
 				continue;
@@ -207,17 +214,22 @@ public class UnemployedMan {
 		}
 		return endRound;
 	}
-	
+
+	/**
+	 * 中了攻击 扣血
+	 * @param attack 单个招式
+	 * @return 是否切回合
+	 */
 	protected boolean doHarm(Attack attack){
 		this.health-=attack.harm;
 		return true;
 	}
-	/**
-	 * 切回合后检查
-	 * @return true if 去世
-	 */
-	public boolean checkAfterRound() {
-		this.biscuits=0;
+
+	public boolean dead() {
 		return this.health<0;
+	}
+
+	public void checkAfterRound(){
+		this.biscuits=0;
 	}
 }

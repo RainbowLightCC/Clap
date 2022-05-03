@@ -64,7 +64,7 @@ public class MySQL {
 	 * @return ��ѯ���ResultSet
 	 */
 	public static ResultSet query(String sql) {
-		System.out.println("MySQL Query: "+sql);
+//		System.out.println("MySQL Query: "+sql);
 		ResultSet rs = null;
 		Statement stmt = null;
 		//������ӹ���
